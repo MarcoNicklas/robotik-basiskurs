@@ -60,7 +60,7 @@
   .navbtn:hover{color:var(--text)}
 
   /* Spalten */
-  .board{flex:1;display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.6em;min-height:0}
+  .board{flex:1;display:grid;grid-template-columns:3.2fr 1fr 1fr;gap:1.4em;min-height:0}
   .lane{display:flex;flex-direction:column;gap:1em;min-height:0;border-radius:1.1em;padding:1.1em;border:2px dashed transparent;background:rgba(255,255,255,.015);transition:border-color .15s, background .15s}
   .lane.over{border-color:var(--lc);background:color-mix(in srgb,var(--lc) 7%,transparent)}
   .lane-head{display:flex;align-items:center;gap:.8em;padding-bottom:.8em;border-bottom:2px solid color-mix(in srgb,var(--lc) 50%,transparent)}
@@ -69,6 +69,10 @@
   .lane-head p{color:var(--muted);font-size:1.05em;margin-top:.2em}
   .cards{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(18em,1fr));align-content:start;gap:1em;overflow:auto;min-height:3em;scrollbar-width:thin}
   .cards .empty{grid-column:1/-1}
+  .lane[data-lane="stunde"]{font-size:1.12em;background:rgba(34,211,238,.04);border:2px solid color-mix(in srgb,var(--cyan) 35%,transparent)}
+  .lane[data-lane="stunde"] .lane-head h2{font-size:2em}
+  .lane:not([data-lane="stunde"]){font-size:.78em;opacity:.92}
+  .lane:not([data-lane="stunde"]) .cards{grid-template-columns:1fr}
   .empty{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:1em;text-align:center;padding:1.4em;border:1px dashed var(--line);border-radius:.8em}
 
   /* Karten */
