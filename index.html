@@ -60,7 +60,7 @@
   .navbtn:hover{color:var(--text)}
 
   /* Spalten */
-  .board{flex:1;display:grid;grid-template-columns:3.2fr 1fr 1fr;gap:1.4em;min-height:0}
+  .board{flex:1;display:grid;grid-template-columns:5fr 1fr;gap:1.4em;min-height:0}
   .lane{display:flex;flex-direction:column;gap:1em;min-height:0;border-radius:1.1em;padding:1.1em;border:2px dashed transparent;background:rgba(255,255,255,.015);transition:border-color .15s, background .15s}
   .lane.over{border-color:var(--lc);background:color-mix(in srgb,var(--lc) 7%,transparent)}
   .lane-head{display:flex;align-items:center;gap:.8em;padding-bottom:.8em;border-bottom:2px solid color-mix(in srgb,var(--lc) 50%,transparent)}
@@ -71,7 +71,9 @@
   .cards .empty{grid-column:1/-1}
   .lane[data-lane="stunde"]{font-size:1.12em;background:rgba(34,211,238,.04);border:2px solid color-mix(in srgb,var(--cyan) 35%,transparent)}
   .lane[data-lane="stunde"] .lane-head h2{font-size:2em}
-  .lane:not([data-lane="stunde"]){font-size:.78em;opacity:.92}
+  .lane[data-lane="stunde"] .cards{grid-template-columns:repeat(auto-fit,minmax(15em,1fr));padding-top:.6em}
+  .card .flag{align-self:flex-start;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.85em;letter-spacing:.08em;color:var(--bg);background:var(--green);border-radius:99em;padding:.2em .7em}
+  .lane:not([data-lane="stunde"]){font-size:.68em;opacity:.9}
   .lane:not([data-lane="stunde"]) .cards{grid-template-columns:1fr}
   .empty{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:1em;text-align:center;padding:1.4em;border:1px dashed var(--line);border-radius:.8em}
 
@@ -97,11 +99,24 @@
   .btn{display:flex;flex-direction:column;align-items:flex-start;gap:.1em;margin-top:auto;text-decoration:none;font-weight:700;font-size:1.15em;color:var(--bg);background:var(--accent);border-radius:.6em;padding:.55em .9em}
   .btn small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.75em;opacity:.75}
   .btn:hover{filter:brightness(1.1)}
-  .move{position:absolute;top:.6em;right:.6em;display:flex;gap:.3em;opacity:0;transition:opacity .15s}
+  .move{position:absolute;top:-1em;right:.8em;z-index:2;display:flex;gap:.3em;opacity:0;transition:opacity .15s}
   .card:hover .move,.card:focus-within .move{opacity:1}
   .move button{width:1.9em;height:1.9em;border-radius:.4em;background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-size:1em}
   .move button:hover{color:var(--text);border-color:var(--muted)}
   .move button:disabled{opacity:.25;cursor:default}
+
+  /* Mebis-Lektionsauswahl */
+  .edit{flex:none;width:2em;height:2em;border-radius:.45em;font-size:1.05em;color:var(--magenta);border:1px solid color-mix(in srgb,var(--magenta) 45%,transparent);opacity:.55}
+  .edit:hover,.edit.on{opacity:1}
+  .edit.on{background:var(--magenta);color:var(--bg)}
+  .picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.7em,1fr));gap:.4em;padding:.7em;border-radius:.7em;background:var(--panel2);border:1px dashed color-mix(in srgb,var(--magenta) 50%,transparent)}
+  .picker .pk{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.05em;height:2.3em;border-radius:.45em;border:1px solid var(--line);color:var(--muted);background:rgba(255,255,255,.03)}
+  .picker .pk:hover{color:var(--text);border-color:var(--magenta)}
+  .picker .pk.on{background:var(--magenta);color:var(--bg);border-color:var(--magenta)}
+  .picker .done{grid-column:1/-1;font-weight:700;font-size:1.05em;padding:.45em;border-radius:.45em;background:var(--magenta);color:var(--bg)}
+  .nolesson{color:var(--muted);font-size:1.15em;font-style:italic}
+  .addcard{grid-column:1/-1;border:2px dashed color-mix(in srgb,var(--magenta) 45%,transparent);color:var(--magenta);border-radius:.9em;padding:.7em;font-size:1.15em;font-weight:700;opacity:.55;transition:opacity .15s}
+  .addcard:hover{opacity:1}
 
   /* Sperrbildschirm */
   .lockwrap{grid-column:1/-1;display:grid;place-items:center}
@@ -154,9 +169,9 @@
       <span><i style="background:var(--yellow)"></i>Organisation</span>
       <span><i style="background:var(--magenta)"></i>Mebis</span>
       <span><i style="background:var(--cyan)"></i>SPIKE-Praxis</span>
-      <span><i style="background:var(--green)"></i>Extra</span>
+      <span><i style="background:var(--green)"></i>Für Schnelle</span>
     </div>
-    <span id="tools">Karten ziehen oder ◀ ▶ zum Verschieben · <button class="reset" id="reset">Zurücksetzen</button> · <button class="reset" id="lockall">🔒 Sperren</button></span>
+    <span id="tools">Karten ziehen oder ◀ ▶ · ✎ Lektionen wählen · <button class="reset" id="reset">Zurücksetzen</button> · <button class="reset" id="lockall">🔒 Sperren</button></span>
   </footer>
 </main>
 
@@ -167,7 +182,6 @@ const KURS = [{"id": "s1-2", "stunde": "1/2", "offen": {"titel": "Start: <span>K
 const LANES = [
   { id:"stunde",      badge:"✓", color:"var(--cyan)",   titel:"In der Stunde", hint:"Pflicht – heute im Unterricht" },
   { id:"hausaufgabe", badge:"⌂", color:"var(--orange)", titel:"Hausaufgabe",   hint:"Was in der Stunde nicht fertig wird, zu Hause" },
-  { id:"schnelle",    badge:"★", color:"var(--green)",  titel:"Für Schnelle",  hint:"Fertig? Dann geht’s hier weiter" },
 ];
 const TYP = {
   orga:   { color:"var(--yellow)",  icon:'<path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/>' },
@@ -208,7 +222,27 @@ async function unlock(s, pw){
 }
 
 let idx = 0;
-function laneOf(s, k){ const saved = store.get(key(s)) || {}; return saved[k.id] || k.lane; }
+let picking = null;   // "stundeId" während die Lektionsauswahl offen ist
+const MEBIS_MAX = 16;
+const mkey = s => "robotik-basiskurs:mebis:" + s.id;
+function mebisDefault(data){
+  const k = data.karten.find(k=>k.typ==="mebis");
+  return k ? (k.aufgaben||[]).map(([n])=>parseInt(String(n).replace(/\D/g,""),10)).filter(n=>n>0) : null;
+}
+function mebisAuswahl(s, data){ const saved = store.get(mkey(s)); return Array.isArray(saved) ? saved : mebisDefault(data); }
+function setMebis(s, list){ store.set(mkey(s), [...new Set(list)].sort((a,b)=>a-b)); render(); }
+function kartenMitMebis(s, data){
+  const sel = mebisAuswahl(s, data);
+  const zeigen = sel !== null && (sel.length || picking===s.id || data.karten.some(k=>k.typ==="mebis"));
+  const liste = data.karten.filter(k=>k.typ!=="mebis");
+  if(!zeigen) return liste;
+  const basis = data.karten.find(k=>k.typ==="mebis") || { id:"mebis", typ:"mebis", lane:"stunde", titel:"Mebis-Kurs" };
+  const pos = data.karten.indexOf(basis);
+  const karte = { ...basis, aufgaben: sel.map(n=>["L"+n, "Lektion "+n]) };
+  if(pos>=0) liste.splice(pos, 0, karte); else liste.push(karte);
+  return liste;
+}
+function laneOf(s, k){ const saved = store.get(key(s)) || {}; const l = saved[k.id] || k.lane; return LANES.some(x=>x.id===l) ? l : "stunde"; }
 function setLane(s, kid, lane){ const saved = store.get(key(s)) || {}; saved[kid] = lane; store.set(key(s), saved); render(); }
 
 function cardHTML(k, laneIdx, data){
@@ -217,15 +251,19 @@ function cardHTML(k, laneIdx, data){
   if(href.startsWith("anhang:")) href = data.urls[href.slice(7)] || "#";
   const body = [
     k.punkte ? `<ul>${k.punkte.map(p=>`<li>${p}</li>`).join("")}</ul>` : "",
-    k.aufgaben ? `<div class="tasks">${k.aufgaben.map(([n,x])=>`<div class="task"><span class="n">${n}</span>${x}</div>`).join("")}</div>` : "",
+    k.typ==="mebis" && !(k.aufgaben||[]).length ? `<div class="nolesson">Noch keine Lektion gewählt</div>` : "",
+    k.typ==="mebis" && picking===KURS[idx].id ? `<div class="picker">${Array.from({length:MEBIS_MAX},(_,i)=>i+1).map(n=>`<button class="pk ${(k.aufgaben||[]).some(([l])=>l==="L"+n)?"on":""}" data-n="${n}" title="Lektion ${n}">${n}</button>`).join("")}<button class="done">✓ Fertig</button></div>` : "",
+    k.aufgaben && k.aufgaben.length ? `<div class="tasks">${k.aufgaben.map(([n,x])=>`<div class="task"><span class="n">${n}</span>${x}</div>`).join("")}</div>` : "",
     k.link ? `<a class="btn" href="${href}" target="_blank" rel="noopener" draggable="false">${k.link.text} →${/^https?:/.test(href) ? `<small>${href.replace(/^https?:\/\//,"").replace(/\/$/,"")}</small>` : ""}</a>` : "",
   ].join("");
-  return `<article class="card" draggable="true" data-id="${k.id}" style="--accent:${t.color}">
+  const pick = k.typ==="mebis" && picking===KURS[idx].id;
+  return `<article class="card ${pick?"picking":""}" draggable="${pick?"false":"true"}" data-id="${k.id}" style="--accent:${t.color}">
     <div class="move">
       <button data-dir="-1" ${laneIdx===0?"disabled":""} title="Nach links">◀</button>
       <button data-dir="1" ${laneIdx===LANES.length-1?"disabled":""} title="Nach rechts">▶</button>
     </div>
-    <div class="top"><div class="icon"><svg viewBox="0 0 24 24">${t.icon}</svg></div><h3>${k.titel}</h3></div>
+    ${k.typ==="extra" ? `<span class="flag">★ FÜR SCHNELLE</span>` : ""}
+    <div class="top"><div class="icon"><svg viewBox="0 0 24 24">${t.icon}</svg></div><h3>${k.titel}</h3>${k.typ==="mebis" ? `<button class="edit ${pick?"on":""}" title="Mebis-Lektionen auswählen">✎</button>` : ""}</div>
     ${body}
   </article>`;
 }
@@ -262,10 +300,12 @@ function render(){
 
   document.getElementById("title").innerHTML = data.titel;
   board.innerHTML = LANES.map((l,li)=>{
-    const ks = data.karten.filter(k=>laneOf(s,k)===l.id);
+    const alle = kartenMitMebis(s, data);
+    const ks = alle.filter(k=>laneOf(s,k)===l.id);
+    const add = l.id==="stunde" && !alle.some(k=>k.typ==="mebis") ? `<button class="addcard">+ Mebis-Lektionen</button>` : "";
     return `<div class="lane" data-lane="${l.id}" style="--lc:${l.color}">
       <div class="lane-head"><span class="badge">${l.badge}</span><div><h2>${l.titel}</h2><p>${l.hint}</p></div></div>
-      <div class="cards">${ks.length ? ks.map(k=>cardHTML(k,li,data)).join("") : `<div class="empty">– hierher ziehen –</div>`}</div>
+      <div class="cards">${ks.length ? ks.map(k=>cardHTML(k,li,data)).join("") : `<div class="empty">– hierher ziehen –</div>`}${add}</div>
     </div>`;
   }).join("");
 }
@@ -277,12 +317,18 @@ document.getElementById("tabs").addEventListener("click", e=>{ const b=e.target.
 document.getElementById("prev").onclick = ()=>go(idx-1);
 document.getElementById("next").onclick = ()=>go(idx+1);
 document.addEventListener("keydown", e=>{ if(e.target.tagName==="INPUT") return; if(e.key==="ArrowLeft") go(idx-1); if(e.key==="ArrowRight") go(idx+1); });
-document.getElementById("reset").onclick = ()=>{ store.del(key(KURS[idx])); render(); };
+document.getElementById("reset").onclick = ()=>{ store.del(key(KURS[idx])); store.del(mkey(KURS[idx])); picking = null; render(); };
 document.getElementById("lockall").onclick = ()=>{ KURS.forEach(s=>{ if(s.offen) return; delete OPEN[s.id]; session.del("pw:"+s.id); }); render(); };
 
 const board = document.getElementById("board");
 board.addEventListener("click", e=>{
-  const b = e.target.closest(".move button"); if(!b) return;
+  const s = KURS[idx], data = OPEN[s.id];
+  if(e.target.closest(".addcard")){ picking = s.id; setMebis(s, []); return; }
+  if(e.target.closest(".edit")){ picking = picking===s.id ? null : s.id; render(); return; }
+  if(e.target.closest(".picker .done")){ picking = null; render(); return; }
+  const pk = e.target.closest(".picker .pk");
+  if(pk){ const n = +pk.dataset.n, sel = mebisAuswahl(s, data) || []; setMebis(s, sel.includes(n) ? sel.filter(x=>x!==n) : [...sel, n]); return; }
+  const b = e.target.closest(".move button[data-dir]"); if(!b) return;
   const card = b.closest(".card"), lane = b.closest(".lane").dataset.lane;
   const li = LANES.findIndex(l=>l.id===lane) + (+b.dataset.dir);
   setLane(KURS[idx], card.dataset.id, LANES[li].id);
@@ -298,8 +344,8 @@ board.addEventListener("drop", e=>{ const l=e.target.closest(".lane"); if(!l) re
   const start = KURS.findIndex(s=>"#"+s.id===location.hash);
   idx = start>=0 ? start : 0;
   KURS.forEach(s=>{ if(s.offen) OPEN[s.id] = prepare(s.offen); });
-  if(KURS.every(s=>s.offen)) document.getElementById("lockall").parentNode.innerHTML = "Karten ziehen oder ◀ ▶ zum Verschieben · <button class=\"reset\" id=\"reset\">Zurücksetzen</button>";
-  document.getElementById("reset").onclick = ()=>{ store.del(key(KURS[idx])); render(); };
+  if(KURS.every(s=>s.offen)) document.getElementById("lockall").parentNode.innerHTML = "Karten ziehen oder ◀ ▶ · ✎ Lektionen wählen · <button class=\"reset\" id=\"reset\">Zurücksetzen</button>";
+  document.getElementById("reset").onclick = ()=>{ store.del(key(KURS[idx])); store.del(mkey(KURS[idx])); picking = null; render(); };
   await Promise.all(KURS.map(s=>{ const pw = session.get("pw:"+s.id); return (!s.offen && pw) ? unlock(s, pw) : null; }));
   render();
 })();
