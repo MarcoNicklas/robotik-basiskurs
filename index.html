@@ -9,7 +9,7 @@
 <style>
   :root{
     --bg:#0b0f17; --panel:#121a27; --panel2:#0f1622; --line:#1f2b3d; --text:#e8eef7; --muted:#8a9bb3;
-    --cyan:#22d3ee; --yellow:#facc15; --magenta:#f472b6; --green:#4ade80; --orange:#fb923c;
+    --cyan:#22d3ee; --yellow:#facc15; --magenta:#f472b6; --green:#4ade80; --violet:#a78bfa; --orange:#fb923c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:"Space Grotesk",system-ui,sans-serif}
@@ -60,7 +60,7 @@
   .navbtn:hover{color:var(--text)}
 
   /* Spalten */
-  .board{flex:1;display:grid;grid-template-columns:5fr 1fr;gap:1.4em;min-height:0}
+  .board{flex:1;display:grid;grid-template-columns:6.5fr 1fr;gap:1.2em;min-height:0}
   .lane{display:flex;flex-direction:column;gap:1em;min-height:0;border-radius:1.1em;padding:1.1em;border:2px dashed transparent;background:rgba(255,255,255,.015);transition:border-color .15s, background .15s}
   .lane.over{border-color:var(--lc);background:color-mix(in srgb,var(--lc) 7%,transparent)}
   .lane-head{display:flex;align-items:center;gap:.8em;padding-bottom:.8em;border-bottom:2px solid color-mix(in srgb,var(--lc) 50%,transparent)}
@@ -69,9 +69,9 @@
   .lane-head p{color:var(--muted);font-size:1.05em;margin-top:.2em}
   .cards{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(18em,1fr));align-content:start;gap:1em;overflow:auto;min-height:3em;scrollbar-width:thin}
   .cards .empty{grid-column:1/-1}
-  .lane[data-lane="stunde"]{font-size:1.12em;background:rgba(34,211,238,.04);border:2px solid color-mix(in srgb,var(--cyan) 35%,transparent)}
+  .lane[data-lane="stunde"]{font-size:1em;background:rgba(34,211,238,.04);border:2px solid color-mix(in srgb,var(--cyan) 35%,transparent)}
   .lane[data-lane="stunde"] .lane-head h2{font-size:2em}
-  .lane[data-lane="stunde"] .cards{grid-template-columns:repeat(auto-fit,minmax(15em,1fr));padding-top:.6em}
+  .lane[data-lane="stunde"] .cards{grid-template-columns:repeat(4,minmax(0,1fr));padding-top:.6em}
   .card .flag{align-self:flex-start;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.85em;letter-spacing:.08em;color:var(--bg);background:var(--green);border-radius:99em;padding:.2em .7em}
   .lane:not([data-lane="stunde"]){font-size:.68em;opacity:.9}
   .lane:not([data-lane="stunde"]) .cards{grid-template-columns:1fr}
@@ -90,11 +90,11 @@
   .icon svg{width:1.5em;height:1.5em;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .card h3{font-size:1.55em;line-height:1.1;flex:1;min-width:0;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
   .card .tag{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.85em;color:var(--accent);letter-spacing:.12em}
-  .card ul{list-style:none;display:flex;flex-direction:column;gap:.3em;font-size:1.2em}
+  .card ul{list-style:none;display:flex;flex-direction:column;gap:.3em;font-size:1.15em}
   .card li{display:flex;gap:.5em;line-height:1.3}
   .card li::before{content:"▸";color:var(--accent);flex:none}
   .tasks{display:flex;flex-wrap:wrap;gap:.5em}
-  .task{display:flex;align-items:center;gap:.6em;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:.6em;padding:.35em .7em;font-size:1.2em}
+  .task{display:flex;align-items:center;gap:.6em;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:.6em;padding:.3em .6em;font-size:1.1em}
   .task .n{font-family:"JetBrains Mono",monospace;color:var(--bg);background:var(--accent);border-radius:.35em;padding:.05em .4em;font-weight:700;font-size:.85em}
   .btn{display:flex;flex-direction:column;align-items:flex-start;gap:.1em;margin-top:auto;text-decoration:none;font-weight:700;font-size:1.15em;color:var(--bg);background:var(--accent);border-radius:.6em;padding:.55em .9em}
   .btn small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.75em;opacity:.75}
@@ -117,6 +117,24 @@
   .nolesson{color:var(--muted);font-size:1.15em;font-style:italic}
   .addcard{grid-column:1/-1;border:2px dashed color-mix(in srgb,var(--magenta) 45%,transparent);color:var(--magenta);border-radius:.9em;padding:.7em;font-size:1.15em;font-weight:700;opacity:.55;transition:opacity .15s}
   .addcard:hover{opacity:1}
+
+  /* Feste Plätze */
+  .card .slot{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.85em;letter-spacing:.12em;color:var(--accent)}
+  .card.leer{opacity:.38;border-style:dashed;border-left-style:solid;cursor:default;background:transparent}
+  .card .nothing{color:var(--muted);font-size:1.1em;font-style:italic}
+  .card.leer .edit{opacity:1}
+  .ghost{border:2px dashed color-mix(in srgb,var(--accent) 40%,transparent);border-radius:.9em;padding:1em;color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:1em;display:grid;place-content:center;text-align:center;opacity:.6}
+  .orga{display:flex;align-items:center;gap:.8em;background:color-mix(in srgb,var(--yellow) 9%,transparent);border:1px solid color-mix(in srgb,var(--yellow) 35%,transparent);border-left:.4em solid var(--yellow);border-radius:.7em;padding:.5em .9em;font-size:1.05em}
+  .orga .icon{width:2em;height:2em;border-radius:.45em}
+  .orga .icon svg{width:1.2em;height:1.2em}
+  .orga b{color:var(--yellow)}
+  .orga span{color:var(--text)}
+  .writer{display:flex;flex-direction:column;gap:.5em}
+  .writer textarea{font:inherit;font-size:1.15em;line-height:1.35;background:var(--panel2);color:var(--text);border:1px dashed color-mix(in srgb,var(--green) 55%,transparent);border-radius:.6em;padding:.6em .7em;resize:vertical;outline:none}
+  .writer .done{font-weight:700;font-size:1.05em;padding:.45em;border-radius:.45em;background:var(--green);color:var(--bg)}
+  .card .edit{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+  .card .edit.on{background:var(--accent)}
+  .picker .done{background:var(--accent)}
 
   /* Sperrbildschirm */
   .lockwrap{grid-column:1/-1;display:grid;place-items:center}
@@ -166,122 +184,145 @@
 
   <footer>
     <div class="legend">
-      <span><i style="background:var(--yellow)"></i>Organisation</span>
-      <span><i style="background:var(--magenta)"></i>Mebis</span>
-      <span><i style="background:var(--cyan)"></i>SPIKE-Praxis</span>
-      <span><i style="background:var(--green)"></i>Für Schnelle</span>
+      <span><i style="background:var(--magenta)"></i>① Mebis</span>
+      <span><i style="background:var(--cyan)"></i>② SPIKE App</span>
+      <span><i style="background:var(--violet)"></i>③ Eigene Aufgabe</span>
+      <span><i style="background:var(--green)"></i>★ Für Schnelle</span>
     </div>
-    <span id="tools">Karten ziehen oder ◀ ▶ · ✎ Lektionen wählen · <button class="reset" id="reset">Zurücksetzen</button> · <button class="reset" id="lockall">🔒 Sperren</button></span>
+    <span id="tools">✎ bearbeiten · Karten ziehen oder ◀ ▶ · <button class="reset" id="reset">Zurücksetzen</button><span id="lockwrap"> · <button class="reset" id="lockall">🔒 Sperren</button></span></span>
   </footer>
 </main>
 
 <script>
-/* Inhalte werden von build.py verschlüsselt eingesetzt – hier nichts von Hand ändern. */
-const KURS = [{"id": "s1-2", "stunde": "1/2", "offen": {"titel": "Start: <span>Kisten, Lichtmatrix<\/span><br>&amp; Motor", "karten": [{"id": "orga", "typ": "orga", "lane": "stunde", "titel": "Organisation", "punkte": ["Kisten aufbauen", "Kisten bekleben (Gruppenname)", "Gruppeneinteilung"]}, {"id": "mebis", "typ": "mebis", "lane": "stunde", "titel": "Mebis-Kurs", "aufgaben": [["L1", "Lektion 1"], ["L4", "Lektion 4"], ["L5", "Lektion 5"]]}, {"id": "spike", "typ": "praxis", "lane": "stunde", "titel": "LEGO SPIKE App", "aufgaben": [["A", "Die Lichtmatrix"], ["B", "Der Motor"]], "link": {"href": "https://spike.legoeducation.com/prime/start/", "text": "SPIKE App öffnen"}}], "anhaenge": {}}}, {"id": "s3-4", "stunde": "3/4", "offen": {"titel": "Wettbewerb:<br><span>Herumfahren<\/span>", "karten": [{"id": "mebis", "typ": "mebis", "lane": "stunde", "titel": "Mebis-Kurs", "aufgaben": [["L6", "Lektion 6"]]}, {"id": "spike", "typ": "praxis", "lane": "stunde", "titel": "SPIKE Wettbewerbsvorbereitung", "aufgaben": [["A", "Herumfahren"]], "link": {"href": "https://spike.legoeducation.com/prime/start/", "text": "SPIKE App öffnen"}}, {"id": "parcours", "typ": "extra", "lane": "schnelle", "titel": "Eigener Parcours", "punkte": ["Überlege dir einen eigenen Parcours zum Herumfahren"]}], "anhaenge": {}}}, {"id": "s5-6", "stunde": "5/6", "offen": {"titel": "Transportauftrag<br><span>mit Rückfahrt<\/span>", "karten": [{"id": "sim", "typ": "praxis", "lane": "stunde", "titel": "Simulation ansehen", "punkte": ["Ablauf in der Simulation starten", "Fahrweg, Drehungen und Stopps genau beobachten"], "link": {"href": "anhang:robotik-simulation-transport.html", "text": "Simulation öffnen"}}, {"id": "matte", "typ": "praxis", "lane": "stunde", "titel": "Auf der Matte nachfahren", "aufgaben": [["1", "Feld 1: „Aufladen“ (2 s)"], ["2", "Rotes Feld: „Abladen“"], ["3", "Feld 2: 43° drehen"], ["4", "Ins blaue Feld"], ["5", "Direkt zurück zum Start"]], "link": {"href": "https://spike.legoeducation.com/prime/start/", "text": "SPIKE App öffnen"}}], "anhaenge": {"robotik-simulation-transport.html": "<!doctype html>\n<html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>SPIKE Prime – Transportauftrag<\/title>\n<style>\n*{box-sizing:border-box}body{margin:0;background:#edf1f5;color:#172b3a;font:16px system-ui,sans-serif}main{max-width:1260px;margin:auto;padding:24px}h1{font-size:clamp(24px,3vw,36px);margin:0 0 8px}p{line-height:1.5}.intro{margin:0 0 20px;color:#4e6171}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,1fr);gap:22px}.mat{position:relative;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 8px 30px #1232}canvas{display:block;width:100%;height:auto;max-height:820px;object-fit:contain}.legend{display:flex;gap:18px;padding:12px 18px;flex-wrap:wrap;font-size:14px}.dot{width:12px;height:12px;display:inline-block;border-radius:50%;margin-right:6px}.panel{background:white;border-radius:18px;padding:22px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}button,select{font:inherit;border:1px solid #bccbd6;padding:10px 14px;border-radius:9px;background:white;color:#172b3a;cursor:pointer}button.primary{background:#006e9b;color:white;border-color:#006e9b}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f19912;outline-offset:3px}.status{min-height:72px;margin:16px 0;font-size:21px;font-weight:650}.display{background:#10272f;color:#f7d85c;padding:18px;border:6px solid #f4ce37;border-radius:14px;text-align:center;font:700 25px monospace;min-height:78px}.display small{display:block;font:12px system-ui;color:#c9d5dc;margin-bottom:7px}.settings{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;margin:16px 0}.steps{padding-left:23px;line-height:1.6}.steps li{padding:7px 6px;border-radius:6px}.steps li.active{background:#e0f3fa;font-weight:650}.steps li.done{color:#486f54}.progress{width:100%;accent-color:#007aab}.note{font-size:13px;color:#526777;margin:14px 0 0}.detail{min-height:24px;color:#006e9b;font-weight:600}.tag{background:#f0f4f6;padding:9px 12px;border-radius:8px;font-size:14px}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.topbar span{font-size:12px;letter-spacing:.13em;color:#526777}.route-info{margin-top:18px;padding-top:14px;border-top:1px solid #dde5eb} @media(max-width:800px){main{padding:14px}.layout{grid-template-columns:1fr}.panel{padding:18px}.status{min-height:0}}@media print{.controls,.settings,.progress{display:none}.layout{grid-template-columns:1fr 1fr}}\n<\/style><\/head><body><main>\n<div class=\"topbar\"><span>ROBOTIK · SPIKE PRIME<\/span><span>MOTORSTEUERUNG<\/span><\/div><h1>Transportauftrag mit Rückfahrt<\/h1><p class=\"intro\">Aufladen, abladen, 43° drehen – zum blauen Feld und direkt zurück zum Start.<\/p>\n<div class=\"layout\"><section class=\"mat\" aria-label=\"Fahrmatte in 2D mit animiertem Roboter\"><canvas id=\"mat\" width=\"640\" height=\"910\" role=\"img\" aria-label=\"Nachgebildete Fahrmatte in 2D. Hinweg blau. Direkte Rückfahrt vom blauen Feld über gerade Teilstrecken. Lagerflächen sind gesperrt.\"><\/canvas><div class=\"legend\"><span><i class=\"dot\" style=\"background:#00a9da\"><\/i>Hinweg<\/span><span><i class=\"dot\" style=\"background:#f27916\"><\/i>Rückweg<\/span><span>■ Schraffierte Flächen: gesperrt<\/span><\/div><\/section>\n<section class=\"panel\"><div class=\"controls\"><button id=\"play\" class=\"primary\">▶ Start<\/button><button id=\"reset\">↺ Zurücksetzen<\/button><button id=\"next\">Nächster Schritt<\/button><\/div><div class=\"settings\"><label>Tempo <select id=\"speed\"><option value=\"0.5\">0,5×<\/option><option value=\"1\" selected>1×<\/option><option value=\"2\">2×<\/option><\/select><\/label><label><input type=\"checkbox\" id=\"sound\" checked> Wörter sprechen<\/label><label><input type=\"checkbox\" id=\"routes\" checked> Fahrweg zeigen<\/label><\/div>\n<div class=\"display\"><small>ROBOTERDISPLAY<\/small><span id=\"display\">Bereit<\/span><\/div><div id=\"status\" class=\"status\" role=\"status\" aria-live=\"polite\">Am Start bereit.<\/div><div id=\"detail\" class=\"detail\">Die Pfeilspitze am Roboter zeigt seine Blickrichtung.<\/div><input id=\"seek\" class=\"progress\" aria-label=\"Fortschritt der Simulation\" type=\"range\" min=\"0\" max=\"1000\" value=\"0\"><div id=\"time\" class=\"note\">0,0 s<\/div>\n<ol class=\"steps\"><li id=\"step0\">Erstes gelbes Feld: vollständig einfahren, <strong>„Aufladen“ anzeigen und sprechen<\/strong>. Mindestens 2 Sekunden halten.<\/li><li id=\"step1\">Rotes Feld: vollständig einfahren, <strong>„Abladen“ anzeigen und sprechen<\/strong>. Währenddessen stehen bleiben.<\/li><li id=\"step2\">Zweites gelbes Feld: durch die freien Fahrgassen einfahren und auf der Stelle <strong>43° drehen<\/strong>. Anschließend ins blaue Feld fahren.<\/li><li id=\"step3\">Vom blauen Feld <strong>direkt über gerade Teilstrecken zum Start<\/strong> zurückfahren. Richtungswechsel erfolgen auf der Stelle.<\/li><li id=\"step4\">Am ursprünglichen Start anhalten.<\/li><\/ol>\n<div class=\"route-info\"><div class=\"tag\">Rückweg: Blau → links → unten → Startspur → Start<\/div><p class=\"note\">Die grauen Lagerflächen, Regale und Kästen sind gesperrt. Gefahren wird ausschließlich auf den hellen Fahrgassen und in den markierten Zielfeldern. Bei der Rückfahrt werden die Ladestopps nicht wiederholt.<\/p><p class=\"note\">Draufsicht nach deiner Fotovorlage, schematisch nachgebildet. Die Zeichnung liefert keine verlässlichen Zentimetermaße. Der Roboter fährt vorwärts; an den Ecken dreht er auf der Stelle.<\/p><p class=\"note\">43° nach deiner letzten Angabe. Danach folgt eine getrennte Drehung zur Ausrichtung für die Rückfahrt. Sprache nutzt eine verfügbare deutsche Browserstimme; die Wörter erscheinen zusätzlich auf dem Display.<\/p><p class=\"note\" id=\"audioNote\"><\/p><\/div><\/section><\/div><\/main>\n<script>\n'use strict';\nconst canvas=document.getElementById('mat'),ctx=canvas.getContext('2d');\nconst ui=Object.fromEntries(['play','reset','next','speed','sound','routes','display','status','detail','seek','time','audioNote'].map(id=>[id,document.getElementById(id)]));\nconst P={S:[1.5,7.5],A:[1.5,4.1],B:[1.5,.5],J:[1.5,1.5],K:[3.5,1.5],C:[3.5,3.1],Blue:[4.5,3.1],D:[3.5,4.1]};\nconst outward=[P.S,P.A,P.B,P.J,P.K,P.C,P.Blue],back=[P.Blue,P.C,P.D,P.A,P.S];\nconst blocks=[{x:0,y:1,w:1,h:2.6},{x:2,y:0,w:3,h:1},{x:3,y:5,w:1,h:2},{x:4.25,y:5,w:.75,h:2},{x:2,y:4.8,w:.72,h:2.2}];\nlet pos=P.S.slice(),angle=0,segments=[];\nfunction add(type,to,heading,duration,label,phase,display=''){segments.push({type,from:pos.slice(),to:to.slice(),a:angle,b:heading,duration,label,phase,display});pos=to.slice();angle=heading}\nfunction turn(delta,label,phase){if(Math.abs(delta)<1e-8)return;add('turn',pos,angle+delta,Math.abs(delta)/90*.8,label,phase)}\nfunction drive(to,label,phase){let dx=to[0]-pos[0],dy=to[1]-pos[1],heading=Math.atan2(dx,-dy)*180/Math.PI,delta=((heading-angle)%360+540)%360-180;turn(delta,'Auf der Stelle zum nächsten Fahrabschnitt ausrichten',phase);add('move',to,angle,Math.hypot(dx,dy)*1.4,label,phase)}\ndrive(P.A,'In das erste gelbe Feld einfahren',0);add('wait',pos,angle,2,'Aufladen · Stillstand',0,'Aufladen');\ndrive(P.B,'Zum roten Feld fahren',1);add('wait',pos,angle,2,'Abladen · Stillstand',1,'Abladen');\ndrive(P.J,'Vom roten Feld zurück in die freie Fahrgasse',2);drive(P.K,'In der freien Fahrgasse nach rechts fahren',2);drive(P.C,'In das zweite gelbe Feld einfahren',2);turn(43,'Im zweiten gelben Feld um 43° drehen',2);\ndrive(P.Blue,'In das blaue Feld fahren',2);\nfor(let i=1;i<back.length;i++)drive(back[i],i===back.length-1?'Auf der ursprünglichen Startspur zurückfahren':'Direkt zurück · gerade Teilstrecke fahren',3);\nadd('wait',pos,angle,1,'Am Start angekommen · Stopp',4,'Stopp');let sum=0;segments.forEach(s=>{s.start=sum;sum+=s.duration;s.end=sum});const total=sum;\nlet t=0,running=false,last=0,entered=-1,speechActive=false,speechToken=0,speechTimer=null,spoken=new Set(),utterance=null;\nconst speechSupported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;\nif(!speechSupported)ui.audioNote.textContent='Dieser Browser bietet keine Sprachausgabe. Die Anzeige funktioniert weiterhin.';\nfunction cancelSpeech(){\n  speechToken++;\n  clearTimeout(speechTimer);\n  speechTimer=null;\n  speechActive=false;\n  utterance=null;\n  // Browserfehler dürfen weder Zurücksetzen noch einen neuen Lauf verhindern.\n  if(speechSupported){try{window.speechSynthesis.cancel()}catch{}}\n}\nfunction speechUnavailable(){ui.audioNote.textContent='Die Sprachausgabe ist hier nicht verfügbar. Die Simulation läuft mit der Displayanzeige weiter.'}\nfunction speak(word){\n  if(!ui.sound.checked||!speechSupported)return;\n  cancelSpeech();\n  const token=speechToken;\n  const finish=failed=>{\n    if(token!==speechToken)return;\n    clearTimeout(speechTimer);\n    speechTimer=null;\n    speechActive=false;\n    utterance=null;\n    if(failed)speechUnavailable();\n  };\n  try{\n    utterance=new SpeechSynthesisUtterance(word);\n    utterance.lang='de-DE';\n    utterance.rate=.9;\n    const voice=window.speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().startsWith('de'));\n    if(voice)utterance.voice=voice;\n    utterance.onend=()=>finish(false);\n    utterance.onerror=()=>finish(true);\n    speechActive=true;\n    // Manche Browser melden nach speak/cancel kein Ende: nie endlos warten.\n    speechTimer=setTimeout(()=>{\n      if(token!==speechToken)return;\n      cancelSpeech();\n      speechUnavailable();\n    },8000);\n    if(window.speechSynthesis.paused)window.speechSynthesis.resume();\n    window.speechSynthesis.speak(utterance);\n  }catch{\n    cancelSpeech();\n    speechUnavailable();\n  }\n}\nfunction state(){let i=segments.findIndex(s=>t<s.end);if(i<0)i=segments.length-1;let s=segments[i],u=Math.min(1,Math.max(0,(t-s.start)/s.duration));return{i,s,u,x:s.from[0]+(s.to[0]-s.from[0])*u,y:s.from[1]+(s.to[1]-s.from[1])*u,a:s.a+(s.b-s.a)*u}}\nfunction enter(){let z=state();if(z.i!==entered){entered=z.i;if(['Aufladen','Abladen'].includes(z.s.display)&&!spoken.has(z.i)){spoken.add(z.i);speak(z.s.display)}}}\nfunction project(x,y){return[70+x*100,50+y*100]}\nfunction rect(x,y,w,h,fill,stroke){let p=project(x,y);ctx.fillStyle=fill;ctx.fillRect(...p,w*100,h*100);if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.strokeRect(...p,w*100,h*100)}}\nfunction text(s,x,y,size=16,color='#304452'){ctx.fillStyle=color;ctx.font=`600 ${size}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s,x,y)}\nfunction pallet(x,y,w=.34,h=.22){rect(x,y,w,h,'#b78956','#7a6146');for(let j=1;j<3;j++)rect(x+w*j/3,y,.018,h,'#e7c292')}\nfunction warehouse(b,index){rect(b.x,b.y,b.w,b.h,'#929da5','#68747d');ctx.save();let p=project(b.x,b.y);ctx.beginPath();ctx.rect(...p,b.w*100,b.h*100);ctx.clip();ctx.strokeStyle='#aeb8be';ctx.lineWidth=2;for(let k=-900;k<900;k+=13){ctx.beginPath();ctx.moveTo(p[0]+k,p[1]);ctx.lineTo(p[0]+k+300,p[1]+300);ctx.stroke()}ctx.restore();if(index!==4){for(let y=b.y+.12;y<b.y+b.h-.15;y+=.4){for(let x=b.x+.1;x<b.x+b.w-.3;x+=.44)pallet(x,y)}}else{rect(b.x+.15,b.y+.7,.4,.45,'#737e87','#495863');text('GESPERRT',p[0]+b.w*50,p[1]+b.h*50+30,10,'#fff')}}\nfunction line(points,color,width,dash=[]){ctx.beginPath();points.forEach((p,i)=>{let q=project(...p);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineJoin='round';ctx.lineCap='round';ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}\nfunction drawMat(){ctx.fillStyle='#eef2f5';ctx.fillRect(0,0,640,910);rect(-.13,-.13,5.26,8.26,'#75828a');rect(0,0,5,8,'#fafbf9');ctx.strokeStyle='#d5dee3';ctx.lineWidth=1;for(let x=0;x<=5;x++){ctx.beginPath();ctx.moveTo(...project(x,0));ctx.lineTo(...project(x,8));ctx.stroke()}for(let y=0;y<=8;y++){ctx.beginPath();ctx.moveTo(...project(0,y));ctx.lineTo(...project(5,y));ctx.stroke()}blocks.forEach(warehouse);\nrect(1,0,1,1,'#ef7378','#a23848');rect(1.05,.03,.9,.18,'#8f396e');text('ABLADEN',220,119,13,'#652431');rect(4,2.6,1,1,'#75b6dc','#1f6f9d');text('RAMPE',520,360,13,'#23526f');\nfor(const [key,label] of [['A','1'],['C','2']]){let [x,y]=P[key];rect(x-.46,y-.44,.92,.88,'#fff0b3');let q=project(x-.46,y-.44);ctx.setLineDash([12,8]);ctx.lineWidth=5;ctx.strokeStyle='#d9a918';ctx.strokeRect(...q,92,88);ctx.setLineDash([]);text('FELD '+label,q[0]+46,q[1]+15,12,'#80631b')}\nrect(1,7,1,1,'#dce8e1','#6c9b83');text('START',220,832,16,'#275c41');text('↑',220,788,39,'#568b72');\nfor(const [x,y] of [[.1,0],[.5,.35],[.1,7.4],[4.3,7.5]])pallet(x,y,.3,.22);\ntext('FAHRMATTE · DRAUFSICHT',320,20,17);text('Aufteilung nach Fotovorlage · nicht maßstabsgetreu',320,888,13,'#60717d');\nif(ui.routes.checked){line(outward,'#fff',13);line(outward,'#009ed0',8);if(state().s.phase>=3)line(back,'#f57d20',4,[12,9]);const pts=state().s.phase>=3?back:outward;const color=state().s.phase>=3?'#d45b08':'#007aa5';for(let i=1;i<pts.length;i++){let a=project(...pts[i-1]),b=project(...pts[i]);let v=Math.atan2(b[1]-a[1],b[0]-a[0]);ctx.save();ctx.translate(a[0]+(b[0]-a[0])*.6,a[1]+(b[1]-a[1])*.6);ctx.rotate(v);ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(-9,-7);ctx.lineTo(-9,7);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.restore()}}}\nfunction robot(x,y,a){ctx.save();ctx.translate(...project(x,y));ctx.rotate(a*Math.PI/180);ctx.fillStyle='#152b3a';ctx.fillRect(-24,-17,9,35);ctx.fillRect(15,-17,9,35);ctx.fillStyle='#ffd344';ctx.strokeStyle='#253f4b';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-17,-25,34,50,6);ctx.fill();ctx.stroke();ctx.fillStyle='#f7fbff';ctx.fillRect(-10,-3,20,19);ctx.fillStyle='#007eab';ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(-8,-9);ctx.lineTo(8,-9);ctx.closePath();ctx.fill();ctx.restore()}\nfunction render(){const z=state();drawMat();robot(z.x,z.y,z.a);ui.display.textContent=z.s.display||'—';ui.status.textContent=z.s.label;let special=z.s.type==='turn'&&Math.abs(z.s.b-z.s.a-43)<1e-8;ui.detail.textContent=special?`Drehung: ${(43*z.u).toFixed(0)}° / 43°`:z.s.type==='wait'&&z.s.display!=='Stopp'?`Stillstand: ${(z.s.duration*(1-z.u)).toFixed(1).replace('.',',')} s${speechActive?' · spricht …':''}`:z.s.phase===3?'Direkter Rückweg: gerade fahren, an den Ecken auf der Stelle drehen.':'Die Pfeilspitze zeigt die Blickrichtung.';ui.seek.value=Math.round(t/total*1000);ui.time.textContent=`Ablauf: ${t.toFixed(1).replace('.',',')} s · Sprechpausen mindestens 2 s`;const playLabel=running?'Ⅱ Pause':t>=total?'↺ Noch einmal':'▶ Start';\n// Safari verwirft Klicks, wenn der Textknoten zwischen Drücken und Loslassen ersetzt wird.\nif(ui.play.textContent!==playLabel)ui.play.textContent=playLabel;for(let k=0;k<5;k++)document.getElementById('step'+k).className=k===z.s.phase?'active':k<z.s.phase?'done':''}\nfunction advance(dt){enter();let guard=0;while(dt>1e-8&&t<total&&guard++<30){let s=state().s,rate=s.type==='wait'?1:Number(ui.speed.value),part=Math.min(dt,(s.end-t)/rate);if(speechActive&&s.type==='wait'&&t+part*rate>=s.end){t=Math.max(t,s.end-.000001);break}t=Math.min(total,t+part*rate);dt-=part;if(t<s.end&&s.end-t<1e-8)t=s.end;enter()}if(t>=total)running=false}\nfunction frame(now){requestAnimationFrame(frame);if(running&&last)advance(Math.max(0,Math.min((now-last)/1000,.1)));last=now;render()}\nfunction reset(){cancelSpeech();running=false;t=0;last=0;entered=-1;spoken.clear();render()}\nui.play.onclick=()=>{if(t>=total)reset();if(running){running=false;let i=state().i;if(speechActive){spoken.delete(i);entered=-1}cancelSpeech()}else{last=0;running=true;enter()}render()};ui.reset.onclick=reset;ui.next.onclick=()=>{cancelSpeech();running=false;t=Math.min(total,state().s.end+.000001);entered=-1;render()};ui.seek.oninput=()=>{cancelSpeech();running=false;t=Number(ui.seek.value)/1000*total;entered=-1;spoken.clear();render()};ui.sound.onchange=()=>{if(!ui.sound.checked)cancelSpeech();else{spoken.delete(state().i);entered=-1;if(running)enter()}};ui.routes.onchange=render;\nwindow.simulation={points:P,segments,total,blocks,outward,back,advance,setTime(value){cancelSpeech();t=Math.max(0,Math.min(total,value));running=false;entered=-1;spoken.clear();render()},getState:state};render();requestAnimationFrame(frame);\n<\/script><\/body><\/html>\n"}}}];
+/* Inhalte werden von build.py eingesetzt – hier nichts von Hand ändern. */
+const KURS = [{"id": "s1-2", "stunde": "1/2", "offen": {"titel": "Start: <span>Kisten, Lichtmatrix<\/span><br>&amp; Motor", "orga": ["Kisten aufbauen", "Kisten bekleben (Gruppenname)", "Gruppeneinteilung"], "mebis": [1, 4, 5], "spike": {"titel": "LEGO SPIKE App", "aufgaben": [["A", "Die Lichtmatrix"], ["B", "Der Motor"]]}, "html": null, "schnelle": [], "anhaenge": {}}}, {"id": "s3-4", "stunde": "3/4", "offen": {"titel": "Wettbewerb:<br><span>Herumfahren<\/span>", "mebis": [6], "spike": {"titel": "Wettbewerbsvorbereitung", "aufgaben": [["A", "Herumfahren"]]}, "html": null, "schnelle": ["Überlege dir einen eigenen Parcours zum Herumfahren"], "anhaenge": {}}}, {"id": "s5-6", "stunde": "5/6", "offen": {"titel": "Transportauftrag<br><span>mit Rückfahrt<\/span>", "mebis": [], "spike": {"titel": "Programmieren & testen", "punkte": ["Ablauf in der SPIKE App programmieren", "Auf der Matte testen und verbessern"]}, "html": {"titel": "Simulation: Transportauftrag", "datei": "robotik-simulation-transport.html", "linktext": "Simulation öffnen", "aufgaben": [["1", "Feld 1: „Aufladen“ (2 s)"], ["2", "Rotes Feld: „Abladen“"], ["3", "Feld 2: 43° drehen"], ["4", "Ins blaue Feld"], ["5", "Direkt zurück zum Start"]]}, "schnelle": [], "anhaenge": {"robotik-simulation-transport.html": "<!doctype html>\n<html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>SPIKE Prime – Transportauftrag<\/title>\n<style>\n*{box-sizing:border-box}body{margin:0;background:#edf1f5;color:#172b3a;font:16px system-ui,sans-serif}main{max-width:1260px;margin:auto;padding:24px}h1{font-size:clamp(24px,3vw,36px);margin:0 0 8px}p{line-height:1.5}.intro{margin:0 0 20px;color:#4e6171}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,1fr);gap:22px}.mat{position:relative;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 8px 30px #1232}canvas{display:block;width:100%;height:auto;max-height:820px;object-fit:contain}.legend{display:flex;gap:18px;padding:12px 18px;flex-wrap:wrap;font-size:14px}.dot{width:12px;height:12px;display:inline-block;border-radius:50%;margin-right:6px}.panel{background:white;border-radius:18px;padding:22px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}button,select{font:inherit;border:1px solid #bccbd6;padding:10px 14px;border-radius:9px;background:white;color:#172b3a;cursor:pointer}button.primary{background:#006e9b;color:white;border-color:#006e9b}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f19912;outline-offset:3px}.status{min-height:72px;margin:16px 0;font-size:21px;font-weight:650}.display{background:#10272f;color:#f7d85c;padding:18px;border:6px solid #f4ce37;border-radius:14px;text-align:center;font:700 25px monospace;min-height:78px}.display small{display:block;font:12px system-ui;color:#c9d5dc;margin-bottom:7px}.settings{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;margin:16px 0}.steps{padding-left:23px;line-height:1.6}.steps li{padding:7px 6px;border-radius:6px}.steps li.active{background:#e0f3fa;font-weight:650}.steps li.done{color:#486f54}.progress{width:100%;accent-color:#007aab}.note{font-size:13px;color:#526777;margin:14px 0 0}.detail{min-height:24px;color:#006e9b;font-weight:600}.tag{background:#f0f4f6;padding:9px 12px;border-radius:8px;font-size:14px}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.topbar span{font-size:12px;letter-spacing:.13em;color:#526777}.route-info{margin-top:18px;padding-top:14px;border-top:1px solid #dde5eb} @media(max-width:800px){main{padding:14px}.layout{grid-template-columns:1fr}.panel{padding:18px}.status{min-height:0}}@media print{.controls,.settings,.progress{display:none}.layout{grid-template-columns:1fr 1fr}}\n<\/style><\/head><body><main>\n<div class=\"topbar\"><span>ROBOTIK · SPIKE PRIME<\/span><span>MOTORSTEUERUNG<\/span><\/div><h1>Transportauftrag mit Rückfahrt<\/h1><p class=\"intro\">Aufladen, abladen, 43° drehen – zum blauen Feld und direkt zurück zum Start.<\/p>\n<div class=\"layout\"><section class=\"mat\" aria-label=\"Fahrmatte in 2D mit animiertem Roboter\"><canvas id=\"mat\" width=\"640\" height=\"910\" role=\"img\" aria-label=\"Nachgebildete Fahrmatte in 2D. Hinweg blau. Direkte Rückfahrt vom blauen Feld über gerade Teilstrecken. Lagerflächen sind gesperrt.\"><\/canvas><div class=\"legend\"><span><i class=\"dot\" style=\"background:#00a9da\"><\/i>Hinweg<\/span><span><i class=\"dot\" style=\"background:#f27916\"><\/i>Rückweg<\/span><span>■ Schraffierte Flächen: gesperrt<\/span><\/div><\/section>\n<section class=\"panel\"><div class=\"controls\"><button id=\"play\" class=\"primary\">▶ Start<\/button><button id=\"reset\">↺ Zurücksetzen<\/button><button id=\"next\">Nächster Schritt<\/button><\/div><div class=\"settings\"><label>Tempo <select id=\"speed\"><option value=\"0.5\">0,5×<\/option><option value=\"1\" selected>1×<\/option><option value=\"2\">2×<\/option><\/select><\/label><label><input type=\"checkbox\" id=\"sound\" checked> Wörter sprechen<\/label><label><input type=\"checkbox\" id=\"routes\" checked> Fahrweg zeigen<\/label><\/div>\n<div class=\"display\"><small>ROBOTERDISPLAY<\/small><span id=\"display\">Bereit<\/span><\/div><div id=\"status\" class=\"status\" role=\"status\" aria-live=\"polite\">Am Start bereit.<\/div><div id=\"detail\" class=\"detail\">Die Pfeilspitze am Roboter zeigt seine Blickrichtung.<\/div><input id=\"seek\" class=\"progress\" aria-label=\"Fortschritt der Simulation\" type=\"range\" min=\"0\" max=\"1000\" value=\"0\"><div id=\"time\" class=\"note\">0,0 s<\/div>\n<ol class=\"steps\"><li id=\"step0\">Erstes gelbes Feld: vollständig einfahren, <strong>„Aufladen“ anzeigen und sprechen<\/strong>. Mindestens 2 Sekunden halten.<\/li><li id=\"step1\">Rotes Feld: vollständig einfahren, <strong>„Abladen“ anzeigen und sprechen<\/strong>. Währenddessen stehen bleiben.<\/li><li id=\"step2\">Zweites gelbes Feld: durch die freien Fahrgassen einfahren und auf der Stelle <strong>43° drehen<\/strong>. Anschließend ins blaue Feld fahren.<\/li><li id=\"step3\">Vom blauen Feld <strong>direkt über gerade Teilstrecken zum Start<\/strong> zurückfahren. Richtungswechsel erfolgen auf der Stelle.<\/li><li id=\"step4\">Am ursprünglichen Start anhalten.<\/li><\/ol>\n<div class=\"route-info\"><div class=\"tag\">Rückweg: Blau → links → unten → Startspur → Start<\/div><p class=\"note\">Die grauen Lagerflächen, Regale und Kästen sind gesperrt. Gefahren wird ausschließlich auf den hellen Fahrgassen und in den markierten Zielfeldern. Bei der Rückfahrt werden die Ladestopps nicht wiederholt.<\/p><p class=\"note\">Draufsicht nach deiner Fotovorlage, schematisch nachgebildet. Die Zeichnung liefert keine verlässlichen Zentimetermaße. Der Roboter fährt vorwärts; an den Ecken dreht er auf der Stelle.<\/p><p class=\"note\">43° nach deiner letzten Angabe. Danach folgt eine getrennte Drehung zur Ausrichtung für die Rückfahrt. Sprache nutzt eine verfügbare deutsche Browserstimme; die Wörter erscheinen zusätzlich auf dem Display.<\/p><p class=\"note\" id=\"audioNote\"><\/p><\/div><\/section><\/div><\/main>\n<script>\n'use strict';\nconst canvas=document.getElementById('mat'),ctx=canvas.getContext('2d');\nconst ui=Object.fromEntries(['play','reset','next','speed','sound','routes','display','status','detail','seek','time','audioNote'].map(id=>[id,document.getElementById(id)]));\nconst P={S:[1.5,7.5],A:[1.5,4.1],B:[1.5,.5],J:[1.5,1.5],K:[3.5,1.5],C:[3.5,3.1],Blue:[4.5,3.1],D:[3.5,4.1]};\nconst outward=[P.S,P.A,P.B,P.J,P.K,P.C,P.Blue],back=[P.Blue,P.C,P.D,P.A,P.S];\nconst blocks=[{x:0,y:1,w:1,h:2.6},{x:2,y:0,w:3,h:1},{x:3,y:5,w:1,h:2},{x:4.25,y:5,w:.75,h:2},{x:2,y:4.8,w:.72,h:2.2}];\nlet pos=P.S.slice(),angle=0,segments=[];\nfunction add(type,to,heading,duration,label,phase,display=''){segments.push({type,from:pos.slice(),to:to.slice(),a:angle,b:heading,duration,label,phase,display});pos=to.slice();angle=heading}\nfunction turn(delta,label,phase){if(Math.abs(delta)<1e-8)return;add('turn',pos,angle+delta,Math.abs(delta)/90*.8,label,phase)}\nfunction drive(to,label,phase){let dx=to[0]-pos[0],dy=to[1]-pos[1],heading=Math.atan2(dx,-dy)*180/Math.PI,delta=((heading-angle)%360+540)%360-180;turn(delta,'Auf der Stelle zum nächsten Fahrabschnitt ausrichten',phase);add('move',to,angle,Math.hypot(dx,dy)*1.4,label,phase)}\ndrive(P.A,'In das erste gelbe Feld einfahren',0);add('wait',pos,angle,2,'Aufladen · Stillstand',0,'Aufladen');\ndrive(P.B,'Zum roten Feld fahren',1);add('wait',pos,angle,2,'Abladen · Stillstand',1,'Abladen');\ndrive(P.J,'Vom roten Feld zurück in die freie Fahrgasse',2);drive(P.K,'In der freien Fahrgasse nach rechts fahren',2);drive(P.C,'In das zweite gelbe Feld einfahren',2);turn(43,'Im zweiten gelben Feld um 43° drehen',2);\ndrive(P.Blue,'In das blaue Feld fahren',2);\nfor(let i=1;i<back.length;i++)drive(back[i],i===back.length-1?'Auf der ursprünglichen Startspur zurückfahren':'Direkt zurück · gerade Teilstrecke fahren',3);\nadd('wait',pos,angle,1,'Am Start angekommen · Stopp',4,'Stopp');let sum=0;segments.forEach(s=>{s.start=sum;sum+=s.duration;s.end=sum});const total=sum;\nlet t=0,running=false,last=0,entered=-1,speechActive=false,speechToken=0,speechTimer=null,spoken=new Set(),utterance=null;\nconst speechSupported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;\nif(!speechSupported)ui.audioNote.textContent='Dieser Browser bietet keine Sprachausgabe. Die Anzeige funktioniert weiterhin.';\nfunction cancelSpeech(){\n  speechToken++;\n  clearTimeout(speechTimer);\n  speechTimer=null;\n  speechActive=false;\n  utterance=null;\n  // Browserfehler dürfen weder Zurücksetzen noch einen neuen Lauf verhindern.\n  if(speechSupported){try{window.speechSynthesis.cancel()}catch{}}\n}\nfunction speechUnavailable(){ui.audioNote.textContent='Die Sprachausgabe ist hier nicht verfügbar. Die Simulation läuft mit der Displayanzeige weiter.'}\nfunction speak(word){\n  if(!ui.sound.checked||!speechSupported)return;\n  cancelSpeech();\n  const token=speechToken;\n  const finish=failed=>{\n    if(token!==speechToken)return;\n    clearTimeout(speechTimer);\n    speechTimer=null;\n    speechActive=false;\n    utterance=null;\n    if(failed)speechUnavailable();\n  };\n  try{\n    utterance=new SpeechSynthesisUtterance(word);\n    utterance.lang='de-DE';\n    utterance.rate=.9;\n    const voice=window.speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().startsWith('de'));\n    if(voice)utterance.voice=voice;\n    utterance.onend=()=>finish(false);\n    utterance.onerror=()=>finish(true);\n    speechActive=true;\n    // Manche Browser melden nach speak/cancel kein Ende: nie endlos warten.\n    speechTimer=setTimeout(()=>{\n      if(token!==speechToken)return;\n      cancelSpeech();\n      speechUnavailable();\n    },8000);\n    if(window.speechSynthesis.paused)window.speechSynthesis.resume();\n    window.speechSynthesis.speak(utterance);\n  }catch{\n    cancelSpeech();\n    speechUnavailable();\n  }\n}\nfunction state(){let i=segments.findIndex(s=>t<s.end);if(i<0)i=segments.length-1;let s=segments[i],u=Math.min(1,Math.max(0,(t-s.start)/s.duration));return{i,s,u,x:s.from[0]+(s.to[0]-s.from[0])*u,y:s.from[1]+(s.to[1]-s.from[1])*u,a:s.a+(s.b-s.a)*u}}\nfunction enter(){let z=state();if(z.i!==entered){entered=z.i;if(['Aufladen','Abladen'].includes(z.s.display)&&!spoken.has(z.i)){spoken.add(z.i);speak(z.s.display)}}}\nfunction project(x,y){return[70+x*100,50+y*100]}\nfunction rect(x,y,w,h,fill,stroke){let p=project(x,y);ctx.fillStyle=fill;ctx.fillRect(...p,w*100,h*100);if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.strokeRect(...p,w*100,h*100)}}\nfunction text(s,x,y,size=16,color='#304452'){ctx.fillStyle=color;ctx.font=`600 ${size}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s,x,y)}\nfunction pallet(x,y,w=.34,h=.22){rect(x,y,w,h,'#b78956','#7a6146');for(let j=1;j<3;j++)rect(x+w*j/3,y,.018,h,'#e7c292')}\nfunction warehouse(b,index){rect(b.x,b.y,b.w,b.h,'#929da5','#68747d');ctx.save();let p=project(b.x,b.y);ctx.beginPath();ctx.rect(...p,b.w*100,b.h*100);ctx.clip();ctx.strokeStyle='#aeb8be';ctx.lineWidth=2;for(let k=-900;k<900;k+=13){ctx.beginPath();ctx.moveTo(p[0]+k,p[1]);ctx.lineTo(p[0]+k+300,p[1]+300);ctx.stroke()}ctx.restore();if(index!==4){for(let y=b.y+.12;y<b.y+b.h-.15;y+=.4){for(let x=b.x+.1;x<b.x+b.w-.3;x+=.44)pallet(x,y)}}else{rect(b.x+.15,b.y+.7,.4,.45,'#737e87','#495863');text('GESPERRT',p[0]+b.w*50,p[1]+b.h*50+30,10,'#fff')}}\nfunction line(points,color,width,dash=[]){ctx.beginPath();points.forEach((p,i)=>{let q=project(...p);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineJoin='round';ctx.lineCap='round';ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}\nfunction drawMat(){ctx.fillStyle='#eef2f5';ctx.fillRect(0,0,640,910);rect(-.13,-.13,5.26,8.26,'#75828a');rect(0,0,5,8,'#fafbf9');ctx.strokeStyle='#d5dee3';ctx.lineWidth=1;for(let x=0;x<=5;x++){ctx.beginPath();ctx.moveTo(...project(x,0));ctx.lineTo(...project(x,8));ctx.stroke()}for(let y=0;y<=8;y++){ctx.beginPath();ctx.moveTo(...project(0,y));ctx.lineTo(...project(5,y));ctx.stroke()}blocks.forEach(warehouse);\nrect(1,0,1,1,'#ef7378','#a23848');rect(1.05,.03,.9,.18,'#8f396e');text('ABLADEN',220,119,13,'#652431');rect(4,2.6,1,1,'#75b6dc','#1f6f9d');text('RAMPE',520,360,13,'#23526f');\nfor(const [key,label] of [['A','1'],['C','2']]){let [x,y]=P[key];rect(x-.46,y-.44,.92,.88,'#fff0b3');let q=project(x-.46,y-.44);ctx.setLineDash([12,8]);ctx.lineWidth=5;ctx.strokeStyle='#d9a918';ctx.strokeRect(...q,92,88);ctx.setLineDash([]);text('FELD '+label,q[0]+46,q[1]+15,12,'#80631b')}\nrect(1,7,1,1,'#dce8e1','#6c9b83');text('START',220,832,16,'#275c41');text('↑',220,788,39,'#568b72');\nfor(const [x,y] of [[.1,0],[.5,.35],[.1,7.4],[4.3,7.5]])pallet(x,y,.3,.22);\ntext('FAHRMATTE · DRAUFSICHT',320,20,17);text('Aufteilung nach Fotovorlage · nicht maßstabsgetreu',320,888,13,'#60717d');\nif(ui.routes.checked){line(outward,'#fff',13);line(outward,'#009ed0',8);if(state().s.phase>=3)line(back,'#f57d20',4,[12,9]);const pts=state().s.phase>=3?back:outward;const color=state().s.phase>=3?'#d45b08':'#007aa5';for(let i=1;i<pts.length;i++){let a=project(...pts[i-1]),b=project(...pts[i]);let v=Math.atan2(b[1]-a[1],b[0]-a[0]);ctx.save();ctx.translate(a[0]+(b[0]-a[0])*.6,a[1]+(b[1]-a[1])*.6);ctx.rotate(v);ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(-9,-7);ctx.lineTo(-9,7);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.restore()}}}\nfunction robot(x,y,a){ctx.save();ctx.translate(...project(x,y));ctx.rotate(a*Math.PI/180);ctx.fillStyle='#152b3a';ctx.fillRect(-24,-17,9,35);ctx.fillRect(15,-17,9,35);ctx.fillStyle='#ffd344';ctx.strokeStyle='#253f4b';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-17,-25,34,50,6);ctx.fill();ctx.stroke();ctx.fillStyle='#f7fbff';ctx.fillRect(-10,-3,20,19);ctx.fillStyle='#007eab';ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(-8,-9);ctx.lineTo(8,-9);ctx.closePath();ctx.fill();ctx.restore()}\nfunction render(){const z=state();drawMat();robot(z.x,z.y,z.a);ui.display.textContent=z.s.display||'—';ui.status.textContent=z.s.label;let special=z.s.type==='turn'&&Math.abs(z.s.b-z.s.a-43)<1e-8;ui.detail.textContent=special?`Drehung: ${(43*z.u).toFixed(0)}° / 43°`:z.s.type==='wait'&&z.s.display!=='Stopp'?`Stillstand: ${(z.s.duration*(1-z.u)).toFixed(1).replace('.',',')} s${speechActive?' · spricht …':''}`:z.s.phase===3?'Direkter Rückweg: gerade fahren, an den Ecken auf der Stelle drehen.':'Die Pfeilspitze zeigt die Blickrichtung.';ui.seek.value=Math.round(t/total*1000);ui.time.textContent=`Ablauf: ${t.toFixed(1).replace('.',',')} s · Sprechpausen mindestens 2 s`;const playLabel=running?'Ⅱ Pause':t>=total?'↺ Noch einmal':'▶ Start';\n// Safari verwirft Klicks, wenn der Textknoten zwischen Drücken und Loslassen ersetzt wird.\nif(ui.play.textContent!==playLabel)ui.play.textContent=playLabel;for(let k=0;k<5;k++)document.getElementById('step'+k).className=k===z.s.phase?'active':k<z.s.phase?'done':''}\nfunction advance(dt){enter();let guard=0;while(dt>1e-8&&t<total&&guard++<30){let s=state().s,rate=s.type==='wait'?1:Number(ui.speed.value),part=Math.min(dt,(s.end-t)/rate);if(speechActive&&s.type==='wait'&&t+part*rate>=s.end){t=Math.max(t,s.end-.000001);break}t=Math.min(total,t+part*rate);dt-=part;if(t<s.end&&s.end-t<1e-8)t=s.end;enter()}if(t>=total)running=false}\nfunction frame(now){requestAnimationFrame(frame);if(running&&last)advance(Math.max(0,Math.min((now-last)/1000,.1)));last=now;render()}\nfunction reset(){cancelSpeech();running=false;t=0;last=0;entered=-1;spoken.clear();render()}\nui.play.onclick=()=>{if(t>=total)reset();if(running){running=false;let i=state().i;if(speechActive){spoken.delete(i);entered=-1}cancelSpeech()}else{last=0;running=true;enter()}render()};ui.reset.onclick=reset;ui.next.onclick=()=>{cancelSpeech();running=false;t=Math.min(total,state().s.end+.000001);entered=-1;render()};ui.seek.oninput=()=>{cancelSpeech();running=false;t=Number(ui.seek.value)/1000*total;entered=-1;spoken.clear();render()};ui.sound.onchange=()=>{if(!ui.sound.checked)cancelSpeech();else{spoken.delete(state().i);entered=-1;if(running)enter()}};ui.routes.onchange=render;\nwindow.simulation={points:P,segments,total,blocks,outward,back,advance,setTime(value){cancelSpeech();t=Math.max(0,Math.min(total,value));running=false;entered=-1;spoken.clear();render()},getState:state};render();requestAnimationFrame(frame);\n<\/script><\/body><\/html>\n"}}}];
+const SPIKE_URL = "https://spike.legoeducation.com/prime/start/";
+const MEBIS_MAX = 16;
 
 const LANES = [
   { id:"stunde",      badge:"✓", color:"var(--cyan)",   titel:"In der Stunde", hint:"Pflicht – heute im Unterricht" },
-  { id:"hausaufgabe", badge:"⌂", color:"var(--orange)", titel:"Hausaufgabe",   hint:"Was in der Stunde nicht fertig wird, zu Hause" },
+  { id:"hausaufgabe", badge:"⌂", color:"var(--orange)", titel:"Hausaufgabe",   hint:"Was nicht fertig wird, zu Hause" },
 ];
-const TYP = {
-  orga:   { color:"var(--yellow)",  icon:'<path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/>' },
-  mebis:  { color:"var(--magenta)", icon:'<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>' },
-  praxis: { color:"var(--cyan)",    icon:'<rect x="4" y="7" width="16" height="13" rx="2"/><path d="M12 7V3M8 3h8"/><circle cx="9" cy="13" r="1.4"/><circle cx="15" cy="13" r="1.4"/><path d="M9 17h6"/>' },
-  extra:  { color:"var(--green)",   icon:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/>' },
+const ICON = {
+  mebis:   '<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>',
+  spike:   '<rect x="4" y="7" width="16" height="13" rx="2"/><path d="M12 7V3M8 3h8"/><circle cx="9" cy="13" r="1.4"/><circle cx="15" cy="13" r="1.4"/><path d="M9 17h6"/>',
+  html:    '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="m10 13-2 2 2 2M14 13l2 2-2 2"/>',
+  schnelle:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/>',
+  orga:    '<path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+  lock:    '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
 };
-const LOCK_ICON = '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>';
+/* Feste Struktur – jede Stunde hat immer diese vier Plätze in dieser Reihenfolge */
+const SLOTS = [
+  { id:"mebis",    nr:"①", tag:"THEORIE",      color:"var(--magenta)", titel:"Mebis-Kurs" },
+  { id:"spike",    nr:"②", tag:"SPIKE APP",    color:"var(--cyan)",    titel:"LEGO SPIKE App" },
+  { id:"html",     nr:"③", tag:"NACHMACHEN",   color:"var(--violet)",  titel:"Eigene Aufgabe" },
+  { id:"schnelle", nr:"★", tag:"FÜR SCHNELLE", color:"var(--green)",   titel:"Für Schnelle" },
+];
 
-/* Speicher: Kartenpositionen dauerhaft (localStorage), Passwörter nur bis Browser zu (sessionStorage) */
+/* Speicher: Einstellungen dauerhaft im Browser, Passwörter nur bis Browser zu */
 const mk = s => ({
   get(k){ try{ return JSON.parse(s.getItem(k)); }catch(e){ return null; } },
   set(k,v){ try{ s.setItem(k, JSON.stringify(v)); }catch(e){} },
   del(k){ try{ s.removeItem(k); }catch(e){} },
 });
+const dummy = {getItem(){return null},setItem(){},removeItem(){}};
 let store, session;
-try{ store = mk(localStorage); }catch(e){ store = mk({getItem(){return null},setItem(){},removeItem(){}}); }
-try{ session = mk(sessionStorage); }catch(e){ session = mk({getItem(){return null},setItem(){},removeItem(){}}); }
-const key = s => "robotik-basiskurs:" + s.id;
-const OPEN = {};   // id -> entschlüsselter Inhalt
+try{ store = mk(localStorage); }catch(e){ store = mk(dummy); }
+try{ session = mk(sessionStorage); }catch(e){ session = mk(dummy); }
+const K = (what, s) => `robotik-basiskurs:${what}:${s.id}`;
+const OPEN = {};
+let idx = 0;
+let editing = null;   // "mebis" | "schnelle" während der Bearbeitung
 
-/* Entschlüsseln (PBKDF2 + AES-GCM, passend zu build.py) */
+/* Optionaler Passwortschutz (PBKDF2 + AES-GCM, passend zu build.py) */
 const unb64 = b => Uint8Array.from(atob(b), c=>c.charCodeAt(0));
+function prepare(data){
+  data.urls = {};
+  for(const [name, html] of Object.entries(data.anhaenge||{})) data.urls[name] = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+  return data;
+}
 async function decrypt(s, pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
   const k = await crypto.subtle.deriveKey({name:"PBKDF2", salt:unb64(s.salt), iterations:s.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
   const plain = await crypto.subtle.decrypt({name:"AES-GCM", iv:unb64(s.iv)}, k, unb64(s.ct));
   return prepare(JSON.parse(new TextDecoder().decode(plain)));
 }
-function prepare(data){
-  data.urls = {};
-  for(const [name, html] of Object.entries(data.anhaenge||{})) data.urls[name] = URL.createObjectURL(new Blob([html], {type:"text/html"}));
-  return data;
-}
 async function unlock(s, pw){
   try{ OPEN[s.id] = await decrypt(s, pw.trim()); session.set("pw:"+s.id, pw.trim()); return true; }
   catch(e){ return false; }
 }
 
-let idx = 0;
-let picking = null;   // "stundeId" während die Lektionsauswahl offen ist
-const MEBIS_MAX = 16;
-const mkey = s => "robotik-basiskurs:mebis:" + s.id;
-function mebisDefault(data){
-  const k = data.karten.find(k=>k.typ==="mebis");
-  return k ? (k.aufgaben||[]).map(([n])=>parseInt(String(n).replace(/\D/g,""),10)).filter(n=>n>0) : null;
-}
-function mebisAuswahl(s, data){ const saved = store.get(mkey(s)); return Array.isArray(saved) ? saved : mebisDefault(data); }
-function setMebis(s, list){ store.set(mkey(s), [...new Set(list)].sort((a,b)=>a-b)); render(); }
-function kartenMitMebis(s, data){
-  const sel = mebisAuswahl(s, data);
-  const zeigen = sel !== null && (sel.length || picking===s.id || data.karten.some(k=>k.typ==="mebis"));
-  const liste = data.karten.filter(k=>k.typ!=="mebis");
-  if(!zeigen) return liste;
-  const basis = data.karten.find(k=>k.typ==="mebis") || { id:"mebis", typ:"mebis", lane:"stunde", titel:"Mebis-Kurs" };
-  const pos = data.karten.indexOf(basis);
-  const karte = { ...basis, aufgaben: sel.map(n=>["L"+n, "Lektion "+n]) };
-  if(pos>=0) liste.splice(pos, 0, karte); else liste.push(karte);
-  return liste;
-}
-function laneOf(s, k){ const saved = store.get(key(s)) || {}; const l = saved[k.id] || k.lane; return LANES.some(x=>x.id===l) ? l : "stunde"; }
-function setLane(s, kid, lane){ const saved = store.get(key(s)) || {}; saved[kid] = lane; store.set(key(s), saved); render(); }
+/* Zustand pro Stunde */
+const laneOf = (s, id) => { const l = (store.get(K("lanes", s)) || {})[id]; return LANES.some(x=>x.id===l) ? l : "stunde"; };
+const setLane = (s, id, lane) => { const m = store.get(K("lanes", s)) || {}; m[id] = lane; store.set(K("lanes", s), m); render(); };
+const mebisSel = (s, d) => { const v = store.get(K("mebis", s)); return Array.isArray(v) ? v : (d.mebis || []); };
+const schnelleList = (s, d) => { const v = store.get(K("schnelle", s)); return Array.isArray(v) ? v : (d.schnelle || []); };
 
-function cardHTML(k, laneIdx, data){
-  const t = TYP[k.typ];
-  let href = k.link ? k.link.href : "";
-  if(href.startsWith("anhang:")) href = data.urls[href.slice(7)] || "#";
-  const body = [
-    k.punkte ? `<ul>${k.punkte.map(p=>`<li>${p}</li>`).join("")}</ul>` : "",
-    k.typ==="mebis" && !(k.aufgaben||[]).length ? `<div class="nolesson">Noch keine Lektion gewählt</div>` : "",
-    k.typ==="mebis" && picking===KURS[idx].id ? `<div class="picker">${Array.from({length:MEBIS_MAX},(_,i)=>i+1).map(n=>`<button class="pk ${(k.aufgaben||[]).some(([l])=>l==="L"+n)?"on":""}" data-n="${n}" title="Lektion ${n}">${n}</button>`).join("")}<button class="done">✓ Fertig</button></div>` : "",
-    k.aufgaben && k.aufgaben.length ? `<div class="tasks">${k.aufgaben.map(([n,x])=>`<div class="task"><span class="n">${n}</span>${x}</div>`).join("")}</div>` : "",
-    k.link ? `<a class="btn" href="${href}" target="_blank" rel="noopener" draggable="false">${k.link.text} →${/^https?:/.test(href) ? `<small>${href.replace(/^https?:\/\//,"").replace(/\/$/,"")}</small>` : ""}</a>` : "",
-  ].join("");
-  const pick = k.typ==="mebis" && picking===KURS[idx].id;
-  return `<article class="card ${pick?"picking":""}" draggable="${pick?"false":"true"}" data-id="${k.id}" style="--accent:${t.color}">
-    <div class="move">
+/* Inhalt eines Platzes */
+function slotData(slot, s, d){
+  if(slot.id==="mebis"){
+    const sel = mebisSel(s, d);
+    return { leer: !sel.length, aufgaben: sel.map(n=>["L"+n, "Lektion "+n]) };
+  }
+  if(slot.id==="spike"){
+    const x = d.spike; if(!x) return { leer:true };
+    return { ...x, link:{ href:SPIKE_URL, text:"SPIKE App öffnen" } };
+  }
+  if(slot.id==="html"){
+    const x = d.html; if(!x) return { leer:true };
+    return { ...x, link: x.datei ? { href:(d.urls||{})[x.datei] || "#", text:x.linktext || "Seite öffnen" } : null };
+  }
+  if(slot.id==="schnelle"){
+    const l = schnelleList(s, d);
+    return { leer: !l.length, punkte: l };
+  }
+}
+
+function cardHTML(slot, s, d, laneIdx){
+  const x = slotData(slot, s, d);
+  const ed = editing===slot.id;
+  const editbar = (slot.id==="mebis" || slot.id==="schnelle") ? `<button class="edit ${ed?"on":""}" data-edit="${slot.id}" title="Bearbeiten">✎</button>` : "";
+  let body = "";
+  if(ed && slot.id==="mebis"){
+    const sel = mebisSel(s, d);
+    body = `<div class="picker">${Array.from({length:MEBIS_MAX},(_,i)=>i+1).map(n=>`<button class="pk ${sel.includes(n)?"on":""}" data-n="${n}" title="Lektion ${n}">${n}</button>`).join("")}<button class="done">✓ Fertig</button></div>`;
+  } else if(ed && slot.id==="schnelle"){
+    body = `<div class="writer"><textarea id="schnelleText" rows="5" placeholder="Eine Aufgabe pro Zeile …">${schnelleList(s, d).join("\n")}</textarea><button class="done">✓ Fertig</button></div>`;
+  } else if(x.leer){
+    body = `<div class="nothing">${slot.id==="mebis" ? "Keine Lektion – ✎ zum Auswählen" : slot.id==="schnelle" ? "Noch nichts – ✎ zum Eintragen" : "heute nicht dran"}</div>`;
+  } else {
+    body = [
+      x.punkte && x.punkte.length ? `<ul>${x.punkte.map(p=>`<li>${p}</li>`).join("")}</ul>` : "",
+      x.aufgaben && x.aufgaben.length ? `<div class="tasks">${x.aufgaben.map(([n,t])=>`<div class="task"><span class="n">${n}</span>${t}</div>`).join("")}</div>` : "",
+      x.link ? `<a class="btn" href="${x.link.href}" target="_blank" rel="noopener" draggable="false">${x.link.text} →${/^https?:/.test(x.link.href) ? `<small>${x.link.href.replace(/^https?:\/\//,"").replace(/\/$/,"")}</small>` : ""}</a>` : "",
+    ].join("");
+  }
+  const fest = x.leer && !ed;
+  return `<article class="card ${fest?"leer":""}" draggable="${(ed||fest)?"false":"true"}" data-id="${slot.id}" style="--accent:${slot.color}">
+    ${fest ? "" : `<div class="move">
       <button data-dir="-1" ${laneIdx===0?"disabled":""} title="Nach links">◀</button>
       <button data-dir="1" ${laneIdx===LANES.length-1?"disabled":""} title="Nach rechts">▶</button>
-    </div>
-    ${k.typ==="extra" ? `<span class="flag">★ FÜR SCHNELLE</span>` : ""}
-    <div class="top"><div class="icon"><svg viewBox="0 0 24 24">${t.icon}</svg></div><h3>${k.titel}</h3>${k.typ==="mebis" ? `<button class="edit ${pick?"on":""}" title="Mebis-Lektionen auswählen">✎</button>` : ""}</div>
+    </div>`}
+    <div class="slot">${slot.nr} ${slot.tag}</div>
+    <div class="top"><div class="icon"><svg viewBox="0 0 24 24">${ICON[slot.id]}</svg></div><h3>${x.titel || slot.titel}</h3>${editbar}</div>
     ${body}
   </article>`;
 }
 
 function render(){
-  const s = KURS[idx], data = OPEN[s.id];
+  const s = KURS[idx], d = OPEN[s.id];
   document.title = `Robotik Stunde ${s.stunde}`;
   document.getElementById("nr").textContent = s.stunde;
   document.getElementById("tabs").innerHTML = KURS.map((x,i)=>`<button class="tab ${i===idx?"on":""} ${OPEN[x.id]?"":"locked"}" data-i="${i}">${OPEN[x.id]?"":"🔒 "}Std. ${x.stunde}</button>`).join("");
   document.getElementById("prev").disabled = idx===0;
   document.getElementById("next").disabled = idx===KURS.length-1;
-  document.getElementById("tools").style.visibility = data ? "visible" : "hidden";
+  document.getElementById("tools").style.visibility = d ? "visible" : "hidden";
   const board = document.getElementById("board");
 
-  if(!data){
+  if(!d){
     document.getElementById("title").innerHTML = `Stunde ${s.stunde}<br><span>gesperrt</span>`;
     board.innerHTML = `<div class="lockwrap"><form class="lockbox" id="lockform">
-      <div class="icon"><svg viewBox="0 0 24 24">${LOCK_ICON}</svg></div>
+      <div class="icon"><svg viewBox="0 0 24 24">${ICON.lock}</svg></div>
       <h2>Stunde ${s.stunde} freischalten</h2>
       <p>Das Passwort gibt es von deiner Lehrkraft im Unterricht.</p>
       <div class="lockform"><input id="pw" type="password" autocomplete="off" placeholder="Passwort" aria-label="Passwort"><button type="submit">Öffnen</button></div>
@@ -298,58 +339,66 @@ function render(){
     return;
   }
 
-  document.getElementById("title").innerHTML = data.titel;
+  document.getElementById("title").innerHTML = d.titel;
+  const orga = d.orga && d.orga.length ? `<div class="orga"><div class="icon" style="--accent:var(--yellow)"><svg viewBox="0 0 24 24">${ICON.orga}</svg></div><b>Organisation</b><span>${d.orga.join(" · ")}</span></div>` : "";
   board.innerHTML = LANES.map((l,li)=>{
-    const alle = kartenMitMebis(s, data);
-    const ks = alle.filter(k=>laneOf(s,k)===l.id);
-    const add = l.id==="stunde" && !alle.some(k=>k.typ==="mebis") ? `<button class="addcard">+ Mebis-Lektionen</button>` : "";
+    const cards = SLOTS.map(slot=>{
+      const here = laneOf(s, slot.id)===l.id;
+      if(here) return cardHTML(slot, s, d, li);
+      return l.id==="stunde" ? `<div class="ghost" style="--accent:${slot.color}">${slot.nr} ${slot.titel}<br><small>→ Hausaufgabe</small></div>` : "";
+    }).join("");
     return `<div class="lane" data-lane="${l.id}" style="--lc:${l.color}">
       <div class="lane-head"><span class="badge">${l.badge}</span><div><h2>${l.titel}</h2><p>${l.hint}</p></div></div>
-      <div class="cards">${ks.length ? ks.map(k=>cardHTML(k,li,data)).join("") : `<div class="empty">– hierher ziehen –</div>`}${add}</div>
+      ${l.id==="stunde" ? orga : ""}
+      <div class="cards">${cards || `<div class="empty">– hierher ziehen –</div>`}</div>
     </div>`;
   }).join("");
+  const ta = document.getElementById("schnelleText");
+  if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
 }
 
-function go(i){ idx = Math.max(0, Math.min(KURS.length-1, i)); history.replaceState(null, "", "#"+KURS[idx].id); render(); }
+function saveSchnelle(){
+  const ta = document.getElementById("schnelleText"); if(!ta) return;
+  store.set(K("schnelle", KURS[idx]), ta.value.split("\n").map(x=>x.trim()).filter(Boolean));
+}
+function go(i){ saveSchnelle(); editing = null; idx = Math.max(0, Math.min(KURS.length-1, i)); history.replaceState(null, "", "#"+KURS[idx].id); render(); }
 
 /* Events */
 document.getElementById("tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(b) go(+b.dataset.i); });
 document.getElementById("prev").onclick = ()=>go(idx-1);
 document.getElementById("next").onclick = ()=>go(idx+1);
-document.addEventListener("keydown", e=>{ if(e.target.tagName==="INPUT") return; if(e.key==="ArrowLeft") go(idx-1); if(e.key==="ArrowRight") go(idx+1); });
-document.getElementById("reset").onclick = ()=>{ store.del(key(KURS[idx])); store.del(mkey(KURS[idx])); picking = null; render(); };
+document.addEventListener("keydown", e=>{ if(/INPUT|TEXTAREA/.test(e.target.tagName)) return; if(e.key==="ArrowLeft") go(idx-1); if(e.key==="ArrowRight") go(idx+1); });
+document.getElementById("reset").onclick = ()=>{ const s = KURS[idx]; ["lanes","mebis","schnelle"].forEach(w=>store.del(K(w, s))); editing = null; render(); };
 document.getElementById("lockall").onclick = ()=>{ KURS.forEach(s=>{ if(s.offen) return; delete OPEN[s.id]; session.del("pw:"+s.id); }); render(); };
 
 const board = document.getElementById("board");
 board.addEventListener("click", e=>{
-  const s = KURS[idx], data = OPEN[s.id];
-  if(e.target.closest(".addcard")){ picking = s.id; setMebis(s, []); return; }
-  if(e.target.closest(".edit")){ picking = picking===s.id ? null : s.id; render(); return; }
-  if(e.target.closest(".picker .done")){ picking = null; render(); return; }
-  const pk = e.target.closest(".picker .pk");
-  if(pk){ const n = +pk.dataset.n, sel = mebisAuswahl(s, data) || []; setMebis(s, sel.includes(n) ? sel.filter(x=>x!==n) : [...sel, n]); return; }
+  const s = KURS[idx], d = OPEN[s.id];
+  const ed = e.target.closest("[data-edit]");
+  if(ed){ saveSchnelle(); editing = editing===ed.dataset.edit ? null : ed.dataset.edit; render(); return; }
+  if(e.target.closest(".done")){ saveSchnelle(); editing = null; render(); return; }
+  const pk = e.target.closest(".pk");
+  if(pk){ const n = +pk.dataset.n, sel = mebisSel(s, d); store.set(K("mebis", s), (sel.includes(n) ? sel.filter(x=>x!==n) : [...sel, n]).sort((a,b)=>a-b)); render(); return; }
   const b = e.target.closest(".move button[data-dir]"); if(!b) return;
-  const card = b.closest(".card"), lane = b.closest(".lane").dataset.lane;
-  const li = LANES.findIndex(l=>l.id===lane) + (+b.dataset.dir);
-  setLane(KURS[idx], card.dataset.id, LANES[li].id);
+  const li = LANES.findIndex(l=>l.id===b.closest(".lane").dataset.lane) + (+b.dataset.dir);
+  setLane(s, b.closest(".card").dataset.id, LANES[li].id);
 });
 board.addEventListener("dragstart", e=>{ const c=e.target.closest(".card"); if(!c) return; e.dataTransfer.setData("text/plain", c.dataset.id); c.classList.add("dragging"); });
 board.addEventListener("dragend", e=>{ const c=e.target.closest(".card"); if(c) c.classList.remove("dragging"); });
 board.addEventListener("dragover", e=>{ const l=e.target.closest(".lane"); if(!l) return; e.preventDefault(); board.querySelectorAll(".lane").forEach(x=>x.classList.toggle("over", x===l)); });
 board.addEventListener("dragleave", e=>{ if(!board.contains(e.relatedTarget)) board.querySelectorAll(".lane").forEach(x=>x.classList.remove("over")); });
-board.addEventListener("drop", e=>{ const l=e.target.closest(".lane"); if(!l) return; e.preventDefault(); setLane(KURS[idx], e.dataTransfer.getData("text/plain"), l.dataset.lane); });
+board.addEventListener("drop", e=>{ const l=e.target.closest(".lane"); if(!l) return; e.preventDefault(); board.querySelectorAll(".lane").forEach(x=>x.classList.remove("over")); const id=e.dataTransfer.getData("text/plain"); if(SLOTS.some(x=>x.id===id)) setLane(KURS[idx], id, l.dataset.lane); });
 
-/* Start: Stunde aus #hash, bereits freigeschaltete Stunden (diese Browsersitzung) wieder öffnen */
+/* Start */
 (async ()=>{
   const start = KURS.findIndex(s=>"#"+s.id===location.hash);
   idx = start>=0 ? start : 0;
   KURS.forEach(s=>{ if(s.offen) OPEN[s.id] = prepare(s.offen); });
-  if(KURS.every(s=>s.offen)) document.getElementById("lockall").parentNode.innerHTML = "Karten ziehen oder ◀ ▶ · ✎ Lektionen wählen · <button class=\"reset\" id=\"reset\">Zurücksetzen</button>";
-  document.getElementById("reset").onclick = ()=>{ store.del(key(KURS[idx])); store.del(mkey(KURS[idx])); picking = null; render(); };
+  if(KURS.every(s=>s.offen)) document.getElementById("lockwrap").remove();
   await Promise.all(KURS.map(s=>{ const pw = session.get("pw:"+s.id); return (!s.offen && pw) ? unlock(s, pw) : null; }));
   render();
 })();
-window.addEventListener("hashchange", ()=>{ const i=KURS.findIndex(s=>"#"+s.id===location.hash); if(i>=0 && i!==idx){ idx=i; render(); } });
+window.addEventListener("hashchange", ()=>{ const i=KURS.findIndex(s=>"#"+s.id===location.hash); if(i>=0 && i!==idx) go(i); });
 </script>
 </body>
 </html>
