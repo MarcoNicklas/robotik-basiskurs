@@ -120,7 +120,13 @@
 
   /* Feste Plätze */
   .card .slot{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:.85em;letter-spacing:.12em;color:var(--accent)}
-  .card.leer{opacity:.38;border-style:dashed;border-left-style:solid;cursor:default;background:transparent}
+  .card.leer{opacity:.38;border-style:dashed;border-left-style:solid;cursor:pointer;background:transparent;transition:opacity .15s}
+  .card.leer:hover{opacity:.75}
+  .card .nothing b{font-style:normal;color:var(--accent)}
+  .writer .wbtns{display:flex;gap:.5em}
+  .writer .wbtns .done{flex:1}
+  .writer .hide{font-size:1em;padding:.45em .7em;border-radius:.45em;border:1px solid var(--line);color:var(--muted)}
+  .writer .hide:hover{color:var(--text)}
   .card .nothing{color:var(--muted);font-size:1.1em;font-style:italic}
   .card.leer .edit{opacity:1}
   .ghost{border:2px dashed color-mix(in srgb,var(--accent) 40%,transparent);border-radius:.9em;padding:1em;color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:1em;display:grid;place-content:center;text-align:center;opacity:.6}
@@ -131,7 +137,8 @@
   .orga span{color:var(--text)}
   .writer{display:flex;flex-direction:column;gap:.5em}
   .writer textarea{font:inherit;font-size:1.15em;line-height:1.35;background:var(--panel2);color:var(--text);border:1px dashed color-mix(in srgb,var(--green) 55%,transparent);border-radius:.6em;padding:.6em .7em;resize:vertical;outline:none}
-  .writer .done{font-weight:700;font-size:1.05em;padding:.45em;border-radius:.45em;background:var(--green);color:var(--bg)}
+  .writer .done{font-weight:700;font-size:1.05em;padding:.45em;border-radius:.45em;background:var(--accent);color:var(--bg)}
+  .writer textarea{border-color:color-mix(in srgb,var(--accent) 55%,transparent)!important}
   .card .edit{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
   .card .edit.on{background:var(--accent)}
   .picker .done{background:var(--accent)}
@@ -189,7 +196,7 @@
       <span><i style="background:var(--violet)"></i>③ Eigene Aufgabe</span>
       <span><i style="background:var(--green)"></i>★ Für Schnelle</span>
     </div>
-    <span id="tools">✎ bearbeiten · Karten ziehen oder ◀ ▶ · <button class="reset" id="reset">Zurücksetzen</button><span id="lockwrap"> · <button class="reset" id="lockall">🔒 Sperren</button></span></span>
+    <span id="tools">✎ bearbeiten · blasse Karte antippen = einschalten · ziehen oder ◀ ▶ · <button class="reset" id="reset">Zurücksetzen</button><span id="lockwrap"> · <button class="reset" id="lockall">🔒 Sperren</button></span></span>
   </footer>
 </main>
 
@@ -257,21 +264,30 @@ const laneOf = (s, id) => { const l = (store.get(K("lanes", s)) || {})[id]; retu
 const setLane = (s, id, lane) => { const m = store.get(K("lanes", s)) || {}; m[id] = lane; store.set(K("lanes", s), m); render(); };
 const mebisSel = (s, d) => { const v = store.get(K("mebis", s)); return Array.isArray(v) ? v : (d.mebis || []); };
 const schnelleList = (s, d) => { const v = store.get(K("schnelle", s)); return Array.isArray(v) ? v : (d.schnelle || []); };
+const extraList = (s, id) => { const v = store.get(K("extra-"+id, s)); return Array.isArray(v) ? v : []; };
+const aktivMap = s => store.get(K("aktiv", s)) || {};
+const setAktiv = (s, id, val) => { const m = aktivMap(s); m[id] = val; store.set(K("aktiv", s), m); };
+const EDIT_HINT = { mebis:"Zusätzliche Theorie, eine Zeile pro Punkt …", spike:"Aufgabe in der SPIKE App, eine Zeile pro Punkt …", html:"Aufgabe zum Nachmachen, eine Zeile pro Punkt …", schnelle:"Eine Aufgabe pro Zeile …" };
 
 /* Inhalt eines Platzes */
 function slotData(slot, s, d){
+  if(slot.id==="schnelle") { const l = schnelleList(s, d); return { leer: !l.length, punkte: l }; }
+  const extra = extraList(s, slot.id);
+  let x;
   if(slot.id==="mebis"){
     const sel = mebisSel(s, d);
-    return { leer: !sel.length, aufgaben: sel.map(n=>["L"+n, "Lektion "+n]) };
+    x = { leer: !sel.length, aufgaben: sel.map(n=>["L"+n, "Lektion "+n]) };
+  } else if(slot.id==="spike"){
+    x = d.spike ? { ...d.spike } : { leer:true };
+    x.link = { href:SPIKE_URL, text:"SPIKE App öffnen" };
+  } else {
+    x = d.html ? { ...d.html } : { leer:true };
+    x.link = d.html && d.html.datei ? { href:(d.urls||{})[d.html.datei] || "#", text:d.html.linktext || "Seite öffnen" } : null;
   }
-  if(slot.id==="spike"){
-    const x = d.spike; if(!x) return { leer:true };
-    return { ...x, link:{ href:SPIKE_URL, text:"SPIKE App öffnen" } };
-  }
-  if(slot.id==="html"){
-    const x = d.html; if(!x) return { leer:true };
-    return { ...x, link: x.datei ? { href:(d.urls||{})[x.datei] || "#", text:x.linktext || "Seite öffnen" } : null };
-  }
+  if(extra.length){ x.leer = false; x.punkte = [...(x.punkte||[]), ...extra]; }
+  return x;
+}
+function _alt(slot, s, d){
   if(slot.id==="schnelle"){
     const l = schnelleList(s, d);
     return { leer: !l.length, punkte: l };
@@ -281,15 +297,19 @@ function slotData(slot, s, d){
 function cardHTML(slot, s, d, laneIdx){
   const x = slotData(slot, s, d);
   const ed = editing===slot.id;
-  const editbar = (slot.id==="mebis" || slot.id==="schnelle") ? `<button class="edit ${ed?"on":""}" data-edit="${slot.id}" title="Bearbeiten">✎</button>` : "";
+  const editbar = `<button class="edit ${ed?"on":""}" data-edit="${slot.id}" title="Bearbeiten">✎</button>`;
+  const an = aktivMap(s)[slot.id];
+  const aus = an===false || (x.leer && an!==true);
   let body = "";
-  if(ed && slot.id==="mebis"){
+  if(ed){
+    const text = slot.id==="schnelle" ? schnelleList(s, d) : extraList(s, slot.id);
     const sel = mebisSel(s, d);
-    body = `<div class="picker">${Array.from({length:MEBIS_MAX},(_,i)=>i+1).map(n=>`<button class="pk ${sel.includes(n)?"on":""}" data-n="${n}" title="Lektion ${n}">${n}</button>`).join("")}<button class="done">✓ Fertig</button></div>`;
-  } else if(ed && slot.id==="schnelle"){
-    body = `<div class="writer"><textarea id="schnelleText" rows="5" placeholder="Eine Aufgabe pro Zeile …">${schnelleList(s, d).join("\n")}</textarea><button class="done">✓ Fertig</button></div>`;
+    body = (slot.id==="mebis" ? `<div class="picker">${Array.from({length:MEBIS_MAX},(_,i)=>i+1).map(n=>`<button class="pk ${sel.includes(n)?"on":""}" data-n="${n}" title="Lektion ${n}">${n}</button>`).join("")}</div>` : "")
+      + `<div class="writer"><textarea id="editText" rows="4" placeholder="${EDIT_HINT[slot.id]}">${text.join("\n")}</textarea><div class="wbtns"><button class="done">✓ Fertig</button><button class="hide" title="Platz wieder blass machen">Ausblenden</button></div></div>`;
+  } else if(aus){
+    body = `<div class="nothing">heute nicht dran<br><b>＋ antippen zum Einschalten</b></div>`;
   } else if(x.leer){
-    body = `<div class="nothing">${slot.id==="mebis" ? "Keine Lektion – ✎ zum Auswählen" : slot.id==="schnelle" ? "Noch nichts – ✎ zum Eintragen" : "heute nicht dran"}</div>`;
+    body = `<div class="nothing">${slot.id==="mebis" ? "Noch keine Lektion – ✎ zum Auswählen" : "Noch nichts – ✎ zum Eintragen"}</div>`;
   } else {
     body = [
       x.punkte && x.punkte.length ? `<ul>${x.punkte.map(p=>`<li>${p}</li>`).join("")}</ul>` : "",
@@ -297,7 +317,7 @@ function cardHTML(slot, s, d, laneIdx){
       x.link ? `<a class="btn" href="${x.link.href}" target="_blank" rel="noopener" draggable="false">${x.link.text} →${/^https?:/.test(x.link.href) ? `<small>${x.link.href.replace(/^https?:\/\//,"").replace(/\/$/,"")}</small>` : ""}</a>` : "",
     ].join("");
   }
-  const fest = x.leer && !ed;
+  const fest = aus && !ed;
   return `<article class="card ${fest?"leer":""}" draggable="${(ed||fest)?"false":"true"}" data-id="${slot.id}" style="--accent:${slot.color}">
     ${fest ? "" : `<div class="move">
       <button data-dir="-1" ${laneIdx===0?"disabled":""} title="Nach links">◀</button>
@@ -353,13 +373,14 @@ function render(){
       <div class="cards">${cards || `<div class="empty">– hierher ziehen –</div>`}</div>
     </div>`;
   }).join("");
-  const ta = document.getElementById("schnelleText");
+  const ta = document.getElementById("editText");
   if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
 }
 
 function saveSchnelle(){
-  const ta = document.getElementById("schnelleText"); if(!ta) return;
-  store.set(K("schnelle", KURS[idx]), ta.value.split("\n").map(x=>x.trim()).filter(Boolean));
+  const ta = document.getElementById("editText"); if(!ta || !editing) return;
+  const lines = ta.value.split("\n").map(x=>x.trim()).filter(Boolean);
+  store.set(K(editing==="schnelle" ? "schnelle" : "extra-"+editing, KURS[idx]), lines);
 }
 function go(i){ saveSchnelle(); editing = null; idx = Math.max(0, Math.min(KURS.length-1, i)); history.replaceState(null, "", "#"+KURS[idx].id); render(); }
 
@@ -368,17 +389,21 @@ document.getElementById("tabs").addEventListener("click", e=>{ const b=e.target.
 document.getElementById("prev").onclick = ()=>go(idx-1);
 document.getElementById("next").onclick = ()=>go(idx+1);
 document.addEventListener("keydown", e=>{ if(/INPUT|TEXTAREA/.test(e.target.tagName)) return; if(e.key==="ArrowLeft") go(idx-1); if(e.key==="ArrowRight") go(idx+1); });
-document.getElementById("reset").onclick = ()=>{ const s = KURS[idx]; ["lanes","mebis","schnelle"].forEach(w=>store.del(K(w, s))); editing = null; render(); };
+document.getElementById("reset").onclick = ()=>{ const s = KURS[idx]; ["lanes","mebis","schnelle","aktiv","extra-mebis","extra-spike","extra-html"].forEach(w=>store.del(K(w, s))); editing = null; render(); };
 document.getElementById("lockall").onclick = ()=>{ KURS.forEach(s=>{ if(s.offen) return; delete OPEN[s.id]; session.del("pw:"+s.id); }); render(); };
 
 const board = document.getElementById("board");
 board.addEventListener("click", e=>{
   const s = KURS[idx], d = OPEN[s.id];
+  const off = e.target.closest(".card.leer");
+  if(off && !e.target.closest("a")){ setAktiv(s, off.dataset.id, true); editing = off.dataset.id; render(); return; }
+  if(e.target.closest(".hide")){ saveSchnelle(); setAktiv(s, editing, false); editing = null; render(); return; }
   const ed = e.target.closest("[data-edit]");
+  if(ed){ saveSchnelle(); setAktiv(s, ed.dataset.edit, true); }
   if(ed){ saveSchnelle(); editing = editing===ed.dataset.edit ? null : ed.dataset.edit; render(); return; }
   if(e.target.closest(".done")){ saveSchnelle(); editing = null; render(); return; }
   const pk = e.target.closest(".pk");
-  if(pk){ const n = +pk.dataset.n, sel = mebisSel(s, d); store.set(K("mebis", s), (sel.includes(n) ? sel.filter(x=>x!==n) : [...sel, n]).sort((a,b)=>a-b)); render(); return; }
+  if(pk){ saveSchnelle(); const n = +pk.dataset.n, sel = mebisSel(s, d); store.set(K("mebis", s), (sel.includes(n) ? sel.filter(x=>x!==n) : [...sel, n]).sort((a,b)=>a-b)); render(); return; }
   const b = e.target.closest(".move button[data-dir]"); if(!b) return;
   const li = LANES.findIndex(l=>l.id===b.closest(".lane").dataset.lane) + (+b.dataset.dir);
   setLane(s, b.closest(".card").dataset.id, LANES[li].id);
